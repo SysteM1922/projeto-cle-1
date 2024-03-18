@@ -52,4 +52,8 @@ void validateArray(int *array, int size, int sortType)
     {
         printf("Everything is OK!\n");
     }
+    else
+    {
+        printf("Something went wrong!\n");
+    }
 }
