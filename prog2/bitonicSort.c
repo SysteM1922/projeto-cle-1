@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "bitonicSort.h"
+
 void swap(int *a, int *b, int sortType)
 {
     if (sortType == (*a > *b))
@@ -11,7 +13,7 @@ void swap(int *a, int *b, int sortType)
     }
 }
 
-void order(int *array, int size, int sortType)
+void merge(int *array, int size, int sortType)
 {
     if (size > 1)
     {
@@ -26,14 +28,14 @@ void order(int *array, int size, int sortType)
     }
 }
 
-void sortArray(int *array, int size, int sortType)
+void sort(int *array, int size, int sortType)
 {
     if (size > 1)
     {
         int half = size / 2;
-        sortArray(array, half, 1);
-        sortArray(array + half, size - half, 0);
-        order(array, size, sortType);
+        sort(array, half, 1);
+        sort(array + half, size - half, 0);
+        merge(array, size, sortType);
     }
 }
 
