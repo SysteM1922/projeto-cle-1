@@ -2,36 +2,46 @@
 #include <stdlib.h>
 #include <pthread.h>
 
-#include "main.h"
-#include "sharedMemory.h"
 #include "bitonicSort.h"
+#include "structs.h"
+#include "sharedMemory.h"
 
-static void *worker(void *par)
+extern int *statusWor;
+
+void *worker(void *par)
 {
-    struct work_args *args = (struct work_args *)par;
-
+    int id = *(int *)par;
     int *array;
 
-    while (1)
+    SubArray data;
+
+    while (true)
     {
-        switch (args->action)
+        requestWork(id, &data);
+
+        if (notFinished(id))
         {
-        case WAITING:
+            getArray(&array, data.start, data.size);
+
+            if (data.action == SORT)
+            {
+                sort(array, data.size, data.sortType);
+            }
+            else if (data.action == MERGE)
+            {
+                merge(array, data.size, data.sortType);
+            }
+
+            putArray(array, data.start, data.size);
+
+            completeWork(id);
+        }
+        else
+        {
             break;
-        case SORT:
-            getArray(args->start, &array);
-            sort(array, args->size, args->sortType);
-            args->action = WAITING;
-            break;
-        case MERGE:
-            getArray(args->start, &array);
-            merge(array, args->size, args->sortType);
-            args->action = WAITING;
-            break;
-        case FINISH:
-            exit(EXIT_SUCCESS);
-        default:
-            exit(EXIT_FAILURE);
         }
     }
+
+    statusWor[id] = EXIT_SUCCESS;
+    pthread_exit(&statusWor[id]);
 }

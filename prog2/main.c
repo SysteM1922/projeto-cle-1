@@ -1,63 +1,156 @@
 #include <stdio.h>
 #include <pthread.h>
 #include <stdlib.h>
-#include <math.h>
+#include <getopt.h>
+#include <string.h>
+#include <bits/time.h>
 
-#include "bitonicSort.h"
-#include "main.h"
-#include "distributor.c"
-#include "worker.c"
 #include "sharedMemory.h"
-
-int statusDis;
-
-int *statusWor;
+#include "distributor.h"
+#include "worker.h"
+#include "bitonicSort.h"
 
 int sortType = 0;
+int fullSize;
+int nThreads;
 
-int main(int argc, char *argv[])
+int statusDis;
+int *statusWor;
+
+pthread_t tIdDis;
+pthread_t *tIdWor;
+
+DistributorArgs distributor_args;
+
+/**
+ * \brief Get the process time that has elapsed since last call of this time.
+ *
+ * \return process elapsed time
+ */
+static double get_delta_time(void)
 {
-    int startSize;
-
-    char *fileName = argv[1];
-    int nThreads = atoi(argv[2]);
-
-    pthread_t tIdDis;
-    unsigned int dis;
-
-    pthread_t *tIdWor;
-    unsigned int *wor;
-
-    if (((tIdWor = malloc(nThreads * sizeof(pthread_t))) == NULL) ||
-        ((wor = malloc(nThreads * sizeof(unsigned int))) == NULL))
+    static struct timespec t0, t1;
+    t0 = t1;
+    if (clock_gettime(CLOCK_MONOTONIC, &t1) != 0)
     {
-        printf("something\n");
-        exit(EXIT_FAILURE);
+        perror("clock_gettime");
+        exit(1);
     }
+    return (double)(t1.tv_sec - t0.tv_sec) +
+           1.0e-9 * (double)(t1.tv_nsec - t0.tv_nsec);
+}
 
-    dis = 0;
-    int i;
-    for (i = 0; i < nThreads; i++)
-    {
-        wor[i] = i;
-    }
+void initializeDistributor()
+{
+    distributor_args.sortType = sortType;
 
-    if (pthread_create(&tIdDis, NULL, distributor, NULL) != 0)
+    if (pthread_create(&tIdDis, NULL, distributor, &distributor_args) != 0)
     {
         perror("error on creating thread distributor");
         exit(EXIT_FAILURE);
     }
+}
 
-    if (pthread_join(tIdDis, (void *)&statusDis) != 0)
+void initializeWorkers()
+{
+    int i;
+
+    for (i = 0; i < nThreads; i++)
     {
-        perror("error on waiting for thread distributor");
+        if (pthread_create(&tIdWor[i], NULL, worker, &i) != 0)
+        {
+            perror("error on creating thread worker");
+            exit(EXIT_FAILURE);
+        }
+    }
+}
+
+void waitForDistributorToFinish()
+{
+    if (pthread_join(tIdDis, NULL) != 0)
+    {
+        perror("error on waiting for distributor");
+        exit(EXIT_FAILURE);
+    }
+    printf("Thread distributor has terminated\n");
+}
+
+void waitForWorkersToFinish()
+{
+    int i;
+    for (i = 0; i < nThreads; i++)
+    {
+        if (pthread_join(tIdWor[i], NULL) != 0)
+        {
+            perror("error on waiting for worker");
+            exit(EXIT_FAILURE);
+        }
+        printf("Thread worker %d has terminated\n", i);
+    }
+}
+
+int main(int argc, char *argv[])
+{
+    int opt;
+    char *fileName = NULL;
+
+    if (argc < 5)
+    {
+        printf("Usage: %s -f <file> -t <threads>\n", argv[0]);
         exit(EXIT_FAILURE);
     }
 
-    int *array;
-    getArray(0, &array);
+    while ((opt = getopt(argc, argv, "f:t:h")) != -1)
+    {
+        switch (opt)
+        {
+        case 'f':
+            fileName = optarg;
+            break;
+        case 't':
+            nThreads = atoi(optarg);
+            break;
+        case 'h':
+            printf("Usage: %s -f <file> -t <threads>\n", argv[0]);
+            exit(EXIT_SUCCESS);
+        default:
+            printf("Usage: %s -f <file> -t <threads>\n", argv[0]);
+            exit(EXIT_FAILURE);
+        }
+    }
 
-    validateArray(array, startSize, sortType);
+    putFileName(fileName);
+
+    if (((statusWor = malloc(nThreads * sizeof(int))) == NULL))
+    {
+        printf("error on allocating memory for worker status\n");
+        exit(EXIT_FAILURE);
+    }
+
+    if ((tIdWor = malloc(nThreads * sizeof(pthread_t))) == NULL)
+    {
+        printf("error on allocating memory for worker threads\n");
+        exit(EXIT_FAILURE);
+    }
+
+    (void)get_delta_time();
+
+    initializeDistributor();
+    initializeWorkers();
+
+    waitForWorkersToFinish();
+    waitForDistributorToFinish();
+
+    int *array;
+    getArray(&array, 0, fullSize);
+
+    validateArray(array, fullSize, sortType);
+
+    printf("Time elapsed: %f\n", get_delta_time());
+
+    free(array);
+    free(statusWor);
+    free(tIdWor);
 
     exit(EXIT_SUCCESS);
 }

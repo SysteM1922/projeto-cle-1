@@ -23,8 +23,8 @@ void merge(int *array, int size, int sortType)
         {
             swap(&array[i], &array[i + half], sortType);
         }
-        order(array, half, sortType);
-        order(array + half, size - half, sortType);
+        merge(array, half, sortType);
+        merge(array + half, size - half, sortType);
     }
 }
 
