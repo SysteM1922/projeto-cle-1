@@ -179,6 +179,7 @@ void updateFileStats(char* filename, int numWords, int numWordsWithConsonants, p
     pthread_mutex_unlock(&fileStatsMutex);
 }
 
+
 /* // Aggregate file statistics
 void aggregateResults(Chunk* chunks, int numChunks) {
     pthread_mutex_lock(&fileStatsMutex);
