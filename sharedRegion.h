@@ -16,6 +16,8 @@ typedef struct {
     char* filename;  
     int start;       
     int end;         
+    int wordsCount; // Number of words processed by the thread for this chunk
+    int wordsWithConsonants; // Number of words with at least two instances of the same consonant
 } Chunk;
 
 typedef struct Node {
@@ -45,8 +47,8 @@ void initQueue(Queue* q);
 void enqueue(Queue* q, Chunk* chunk);
 Chunk* dequeue(Queue* q);
 
-void updateChunkStart(Chunk* chunk, int start);
+void updateFileStats(char* filename, int numWords, int numWordsWithConsonants, pthread_t threadID);
 
-void updateFileStats(int fileIndex, int numWords, int numWordsWithConsonants);
+void aggregateFileStats(int numFiles);
 
 #endif // SHARED_REGION_H
