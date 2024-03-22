@@ -159,7 +159,7 @@ int main(int argc, char *argv[])
 
     validateArray(array, fullSize, sortType);
 
-    printf("Time elapsed: %f\n s", get_delta_time());
+    printf("Time elapsed: %f s\n", get_delta_time());
 
     free(array);
     free(statusWor);
