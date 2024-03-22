@@ -42,6 +42,8 @@ void *worker(void *par)
         }
     }
 
+    printf("Worker %d finished\n", id);
+
     statusWor[id] = EXIT_SUCCESS;
     pthread_exit(&statusWor[id]);
 }

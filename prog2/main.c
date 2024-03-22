@@ -69,7 +69,7 @@ void initializeWorkers()
 
 void waitForDistributorToFinish()
 {
-    if (pthread_join(tIdDis, NULL) != 0)
+    if (pthread_join(tIdDis, (void *)&statusDis) != 0)
     {
         perror("error on waiting for distributor");
         exit(EXIT_FAILURE);
@@ -82,7 +82,7 @@ void waitForWorkersToFinish()
     int i;
     for (i = 0; i < nThreads; i++)
     {
-        if (pthread_join(tIdWor[i], NULL) != 0)
+        if (pthread_join(tIdWor[i], (void *)&statusWor[i]) != 0)
         {
             perror("error on waiting for worker");
             exit(EXIT_FAILURE);

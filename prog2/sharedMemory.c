@@ -23,6 +23,10 @@ static int subArraySize;
 
 static bool waitingWork;
 
+static bool waitingComplete;
+
+static bool *completedWork;
+
 static int statusMon;
 
 static bool *notFinishedWorkers;
@@ -73,21 +77,10 @@ void initializeSharedMemory()
         exit(EXIT_FAILURE);
     }
 
-    int i;
-    for (i = 0; i < nThreads; i++)
-    {
-        notFinishedWorkers[i] = true;
-    }
-
     if ((requestingWork = (bool *)malloc(nThreads * sizeof(bool))) == NULL)
     {
         perror("error on allocating memory for workers request");
         exit(EXIT_FAILURE);
-    }
-
-    for (i = 0; i < nThreads; i++)
-    {
-        requestingWork[i] = false;
     }
 
     if ((assignedWork = (bool *)malloc(nThreads * sizeof(bool))) == NULL)
@@ -96,9 +89,19 @@ void initializeSharedMemory()
         exit(EXIT_FAILURE);
     }
 
+    if ((completedWork = (bool *)malloc(nThreads * sizeof(bool))) == NULL)
+    {
+        perror("error on allocating memory for workers completed");
+        exit(EXIT_FAILURE);
+    }
+
+    int i;
     for (i = 0; i < nThreads; i++)
     {
         assignedWork[i] = false;
+        requestingWork[i] = false;
+        completedWork[i] = false;
+        notFinishedWorkers[i] = true;
     }
 
     if ((workersWork = (SubArray *)malloc(nThreads * sizeof(SubArray))) == NULL)
@@ -139,7 +142,16 @@ void distributeSubArrays(SubArray *arraySub, int *array, int subSize, int fullSi
 
 bool sortCompleted()
 {
-    return workersWork[subArraySize - 1].completed;
+    if (subArrays[0].completed)
+    {
+        for (int i = 0; i < nThreads; i++)
+        {
+            notFinishedWorkers[i] = false;
+        }
+        pthread_cond_signal(&workAssigned);
+        return true;
+    }
+    return false;
 }
 
 int notFinished(int id)
@@ -153,12 +165,13 @@ void requestWork(int id, SubArray *subArray)
     pthread_once(&init, initializeSharedMemory);
 
     waitingWork = true;
-    requestingWork[id] = 1;
+    requestingWork[id] = true;
 
     pthread_cond_signal(&workRequest);
 
     while (!assignedWork[id] && notFinishedWorkers[id])
     {
+        printf("Worker %d waiting for work\n", id);
         if ((statusWor[id] = pthread_cond_wait(&workAssigned, &accessCR)) != 0)
         {
             errno = statusMon;
@@ -171,6 +184,7 @@ void requestWork(int id, SubArray *subArray)
     if (notFinishedWorkers[id])
     {
         *subArray = workersWork[id];
+        assignedWork[id] = false;
     }
 
     mutex_unlock();
@@ -187,7 +201,6 @@ SubArray getWorkerWork(int id)
             flag = -2;
             if (subArrays[i].dependent_1 == -1 || (subArrays[subArrays[i].dependent_1].completed && subArrays[subArrays[i].dependent_2].completed))
             {
-                printf("Worker %d has been assigned work %d\n", id, i);
                 return subArrays[i];
             }
         }
@@ -199,10 +212,41 @@ SubArray getWorkerWork(int id)
     return subArray;
 }
 
-void assignWork()
+void completeWork(int id)
 {
     mutex_lock();
     pthread_once(&init, initializeSharedMemory);
+    
+    completedWork[id] = true;
+
+    waitingComplete = true;
+
+    if ((statusWor[id] = pthread_cond_signal(&workCompleted)) != 0)
+    {
+        errno = statusWor[id];
+        perror("error on signaling work completion");
+        statusWor[id] = EXIT_FAILURE;
+        pthread_exit(&statusWor[id]);
+    }
+
+    mutex_unlock();
+}
+
+void waitForWorkRequest()
+{
+    mutex_lock();
+    pthread_once(&init, initializeSharedMemory);
+
+    while (!waitingWork)
+    {
+        printf("Distributor waiting for work request\n");
+        if (pthread_cond_wait(&workRequest, &accessCR) != 0)
+        {
+            perror("error on waiting for work request");
+            statusMon = EXIT_FAILURE;
+            pthread_exit(&statusMon);
+        }
+    }
 
     SubArray subArray;
 
@@ -215,7 +259,6 @@ void assignWork()
 
             if (subArray.threadId == -1)
             {
-                printf("Worker %d has finished\n", i);
                 notFinishedWorkers[i] = false;
                 continue;
             }
@@ -225,9 +268,10 @@ void assignWork()
             }
             else
             {
+                printf("Distributor assigned work to worker %d\n", i);
                 workersWork[i] = subArray;
-                assignedWork[i] = true;
                 requestingWork[i] = false;
+                assignedWork[i] = true;
             }
         }
     }
@@ -245,39 +289,35 @@ void assignWork()
     mutex_unlock();
 }
 
-void completeWork(int id)
-{
-    mutex_lock();
-    pthread_once(&init, initializeSharedMemory);
-    
-    assignedWork[id] = false;
-    workersWork[id].completed = true;
-
-    if ((statusWor[id] = pthread_cond_signal(&workCompleted)) != 0)
-    {
-        errno = statusWor[id];
-        perror("error on signaling work completion");
-        statusWor[id] = EXIT_FAILURE;
-        pthread_exit(&statusWor[id]);
-    }
-
-    mutex_unlock();
-}
-
-void waitForWorkers()
+void waitForWorkComplete()
 {
     mutex_lock();
     pthread_once(&init, initializeSharedMemory);
 
-    while (!waitingWork)
+    while (!waitingComplete)
     {
-        if (pthread_cond_wait(&workRequest, &accessCR) != 0)
+        printf("Distributor waiting for work completion\n");
+        if (pthread_cond_wait(&workCompleted, &accessCR) != 0)
         {
-            perror("error on waiting for work request");
+            perror("error on waiting for work completion");
             statusMon = EXIT_FAILURE;
             pthread_exit(&statusMon);
         }
     }
+
+    int i;
+    for (i = 0; i < nThreads; i++)
+    {
+        if (completedWork[i])
+        {
+            workersWork[i].completed = true;
+            subArrays[workersWork[i].id] = workersWork[i];
+            completedWork[i] = false;
+        }
+    }
+
+    waitingComplete = false;
+    printf("Distributor received work completion\n");
 
     mutex_unlock();
 }

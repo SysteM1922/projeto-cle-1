@@ -16,6 +16,7 @@ typedef struct
 
 typedef struct
 {
+    int id;
     int start;
     int size;
     int sortType;

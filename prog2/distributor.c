@@ -65,6 +65,7 @@ void *distributor(void *par)
     {
         for (j = 0; j < pow(2, i); j++)
         {
+            subArrays[idx].id = idx;
             subArrays[idx].start = j * size;
             subArrays[idx].size = size;
             subArrays[idx].sortType = j % 2 == sortType;
@@ -80,6 +81,7 @@ void *distributor(void *par)
 
     for (i = 0; i < nThreads; i++)
     {
+        subArrays[idx].id = idx;
         subArrays[idx].start = i * size;
         subArrays[idx].size = size;
         subArrays[idx].sortType = i % 2 == sortType;
@@ -96,12 +98,16 @@ void *distributor(void *par)
     free(array);
     free(subArrays);
 
+    waitForWorkRequest();
+
     while (sortCompleted() != true)
     {
-        assignWork();
+        waitForWorkComplete();
 
-        waitForWorkers();
+        waitForWorkRequest();
     }
+
+    printf("Distributor finished\n");
 
     statusDis = EXIT_SUCCESS;
     pthread_exit(&statusDis);

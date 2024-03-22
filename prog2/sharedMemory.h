@@ -25,9 +25,9 @@ int notFinished(int id);
 
 void requestWork(int id, SubArray *subArray);
 
-void assignWork();
+void waitForWorkRequest();
 
-void waitForWorkers();
+void waitForWorkComplete();
 
 void initializeSharedMemory();
 
