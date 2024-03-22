@@ -17,6 +17,8 @@ int nThreads;
 int statusDis;
 int *statusWor;
 
+int *workerId;
+
 pthread_t tIdDis;
 pthread_t *tIdWor;
 
@@ -57,7 +59,7 @@ void initializeWorkers()
 
     for (i = 0; i < nThreads; i++)
     {
-        if (pthread_create(&tIdWor[i], NULL, worker, &i) != 0)
+        if (pthread_create(&tIdWor[i], NULL, worker, &workerId[i]) != 0)
         {
             perror("error on creating thread worker");
             exit(EXIT_FAILURE);
@@ -131,6 +133,13 @@ int main(int argc, char *argv[])
     {
         printf("error on allocating memory for worker threads\n");
         exit(EXIT_FAILURE);
+    }
+
+    workerId = malloc(nThreads * sizeof(int));
+    int i;
+    for (i = 0; i < nThreads; i++)
+    {
+        workerId[i] = i;
     }
 
     (void)get_delta_time();

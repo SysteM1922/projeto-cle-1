@@ -91,7 +91,7 @@ void *distributor(void *par)
         idx++;
     }
 
-    distributeSubArrays(subArrays, array, nThreads * 2 - 1);
+    distributeSubArrays(subArrays, array, nThreads * 2 - 1, fullSize);
 
     free(array);
     free(subArrays);

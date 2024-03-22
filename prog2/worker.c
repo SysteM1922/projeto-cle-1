@@ -10,11 +10,10 @@ extern int *statusWor;
 
 void *worker(void *par)
 {
-    int id = *(int *)par;
+    unsigned int id = *((unsigned int *)par);
     int *array;
 
     SubArray data;
-
     while (true)
     {
         requestWork(id, &data);
@@ -35,6 +34,7 @@ void *worker(void *par)
             putArray(array, data.start, data.size);
 
             completeWork(id);
+            printf("Worker %d completed work\n", id);
         }
         else
         {

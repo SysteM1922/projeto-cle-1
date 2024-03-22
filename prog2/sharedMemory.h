@@ -15,7 +15,7 @@ void putFileName(char *fileName);
 
 void getFileName(char **fileName);
 
-void distributeSubArrays(SubArray *arraySub, int *fullArray, int size);
+void distributeSubArrays(SubArray *arraySub, int *fullArray, int subSize, int fullSize);
 
 void completeWork(int id);
 
