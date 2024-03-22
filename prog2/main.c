@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <getopt.h>
 #include <string.h>
-#include <time.h>
+#include <bits/time.h>
 
 #include "sharedMemory.h"
 #include "distributor.h"
