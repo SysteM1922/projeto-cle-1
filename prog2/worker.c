@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <pthread.h>
+#include <time.h>
 
 #include "bitonicSort.h"
 #include "structs.h"
@@ -14,12 +15,20 @@ void *worker(void *par)
     int *array;
 
     SubArray data;
+
+    time_t t;
+    struct tm tm;
+
     while (true)
     {
         requestWork(id, &data);
 
         if (notFinished(id))
         {
+            t = time(NULL);
+            tm = *localtime(&t);
+            printf("[%02d:%02d:%02d] WORKER %d: Received work\n", tm.tm_hour, tm.tm_min, tm.tm_sec, id);
+
             getArray(&array, data.start, data.size);
 
             if (data.action == SORT)
@@ -33,8 +42,12 @@ void *worker(void *par)
 
             putArray(array, data.start, data.size);
 
+
+            t = time(NULL);
+            tm = *localtime(&t);
+            printf("[%02d:%02d:%02d] WORKER %d: Completed work\n", tm.tm_hour, tm.tm_min, tm.tm_sec, id);
+
             completeWork(id);
-            printf("Worker %d completed work\n", id);
         }
         else
         {
@@ -42,7 +55,9 @@ void *worker(void *par)
         }
     }
 
-    printf("Worker %d finished\n", id);
+    t = time(NULL);
+    tm = *localtime(&t);
+    printf("[%02d:%02d:%02d] WORKER %d: Terminating\n", tm.tm_hour, tm.tm_min, tm.tm_sec, id);
 
     statusWor[id] = EXIT_SUCCESS;
     pthread_exit(&statusWor[id]);

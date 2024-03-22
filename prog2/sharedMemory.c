@@ -171,7 +171,6 @@ void requestWork(int id, SubArray *subArray)
 
     while (!assignedWork[id] && notFinishedWorkers[id])
     {
-        printf("Worker %d waiting for work\n", id);
         if ((statusWor[id] = pthread_cond_wait(&workAssigned, &accessCR)) != 0)
         {
             errno = statusMon;
@@ -239,7 +238,6 @@ void waitForWorkRequest()
 
     while (!waitingWork)
     {
-        printf("Distributor waiting for work request\n");
         if (pthread_cond_wait(&workRequest, &accessCR) != 0)
         {
             perror("error on waiting for work request");
@@ -268,7 +266,6 @@ void waitForWorkRequest()
             }
             else
             {
-                printf("Distributor assigned work to worker %d\n", i);
                 workersWork[i] = subArray;
                 requestingWork[i] = false;
                 assignedWork[i] = true;
@@ -276,7 +273,7 @@ void waitForWorkRequest()
         }
     }
 
-    if ((statusDis = pthread_cond_signal(&workAssigned)) != 0)
+    if ((statusDis = pthread_cond_broadcast(&workAssigned)) != 0)
     {
         errno = statusDis;
         perror("error on signaling work assignment");
@@ -296,7 +293,6 @@ void waitForWorkComplete()
 
     while (!waitingComplete)
     {
-        printf("Distributor waiting for work completion\n");
         if (pthread_cond_wait(&workCompleted, &accessCR) != 0)
         {
             perror("error on waiting for work completion");
@@ -317,7 +313,6 @@ void waitForWorkComplete()
     }
 
     waitingComplete = false;
-    printf("Distributor received work completion\n");
 
     mutex_unlock();
 }

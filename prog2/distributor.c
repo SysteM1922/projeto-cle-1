@@ -19,6 +19,9 @@ void *distributor(void *par)
     FILE *file;
     int size;
 
+    time_t t;
+    struct tm tm;
+
     DistributorArgs *args = (DistributorArgs *)par;
 
     int sortType = args->sortType;
@@ -98,16 +101,22 @@ void *distributor(void *par)
     free(array);
     free(subArrays);
 
-    waitForWorkRequest();
-
     while (sortCompleted() != true)
     {
-        waitForWorkComplete();
-
         waitForWorkRequest();
+        t = time(NULL);
+        tm = *localtime(&t);
+        printf("[%02d:%02d:%02d] DISTRIBUTOR: Received work request\n", tm.tm_hour, tm.tm_min, tm.tm_sec);
+
+        waitForWorkComplete();
+        t = time(NULL);
+        tm = *localtime(&t);
+        printf("[%02d:%02d:%02d] DISTRIBUTOR: Received work complete\n", tm.tm_hour, tm.tm_min, tm.tm_sec);
     }
 
-    printf("Distributor finished\n");
+    t = time(NULL);
+    tm = *localtime(&t);
+    printf("[%02d:%02d:%02d] DISTRIBUTOR: Terminating\n", tm.tm_hour, tm.tm_min, tm.tm_sec);
 
     statusDis = EXIT_SUCCESS;
     pthread_exit(&statusDis);

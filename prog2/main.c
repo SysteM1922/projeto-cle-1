@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <getopt.h>
 #include <string.h>
-#include <bits/time.h>
+#include <time.h>
 
 #include "sharedMemory.h"
 #include "distributor.h"
@@ -74,7 +74,9 @@ void waitForDistributorToFinish()
         perror("error on waiting for distributor");
         exit(EXIT_FAILURE);
     }
-    printf("Thread distributor has terminated\n");
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+    printf("[%02d:%02d:%02d] MAIN: Thread Distributor has terminated!\n", tm.tm_hour, tm.tm_min, tm.tm_sec);
 }
 
 void waitForWorkersToFinish()
@@ -87,7 +89,9 @@ void waitForWorkersToFinish()
             perror("error on waiting for worker");
             exit(EXIT_FAILURE);
         }
-        printf("Thread worker %d has terminated\n", i);
+        time_t t = time(NULL);
+        struct tm tm = *localtime(&t);
+        printf("[%02d:%02d:%02d] MAIN: Thread Worker %d has terminated!\n", tm.tm_hour, tm.tm_min, tm.tm_sec, i);
     }
 }
 
@@ -155,7 +159,7 @@ int main(int argc, char *argv[])
 
     validateArray(array, fullSize, sortType);
 
-    printf("Time elapsed: %f\n", get_delta_time());
+    printf("Time elapsed: %f\n s", get_delta_time());
 
     free(array);
     free(statusWor);
