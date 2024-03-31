@@ -1,3 +1,14 @@
+/**
+ * \file sharedRegion.c
+ * 
+ * \brief Functions for shared region.
+ * 
+ * This file contains the implementation of functions for the shared region of the program.
+ * 
+ * \author Guilherme Antunes - 103600
+ * \author Pedro Rasinhas - 103541
+*/
+
 #include "sharedRegion.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -168,13 +179,18 @@ void enqueue(Queue *q, Chunk *chunk)
  * @param q Pointer to the FIFO queue
  * @return Pointer to the dequeued chunk
  */
-Chunk *dequeue(Queue *q, pthread_t threadID)
+Chunk *dequeue(Queue *q)
 {
     mutex_lock();
 
     if (q->front == NULL)
     {
-        *retChunk = NULL;
+        if (pthread_mutex_unlock(&q->mutex) != 0)
+        {
+            perror("Error unlocking mutex");
+            exit(EXIT_FAILURE);
+        }
+        return NULL;
     }
     else
     {
@@ -182,22 +198,14 @@ Chunk *dequeue(Queue *q, pthread_t threadID)
         Chunk *chunk = temp->chunk;
         q->front = q->front->next;
         free(temp);
-
         if (q->front == NULL)
         {
             q->rear = NULL;
         }
 
-        printf("Thread %ld, dequeued chunk from file %s [%d-%d]\n\n", threadID, chunk->filename, chunk->start, chunk->end);
-
-        if (pthread_mutex_unlock(&q->mutex) != 0)
-        {
-            perror("Error unlocking mutex");
-            exit(EXIT_FAILURE);
-        }
+        mutex_unlock();
         return chunk;
     }
-    mutex_unlock();
 }
 
 /**

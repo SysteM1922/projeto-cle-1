@@ -1,3 +1,14 @@
+/**
+ * \file main.c
+ * 
+ * \brief Main file of the program
+ * 
+ * This file contains the main function of the program. It reads command-line arguments, initializes file structures,
+ * 
+ * \author Guilherme Antunes - 103600
+ * \author Pedro Rasinhas - 103541
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
