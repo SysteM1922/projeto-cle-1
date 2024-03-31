@@ -12,9 +12,9 @@
 
 /**
  * @brief Check if a character is a letter or underscore.
- * 
+ *
  * Checks if the given character is a letter (alphabetic character or underscore).
- * 
+ *
  * @param c The character to check
  * @return 1 if the character is a letter or underscore, otherwise 0
  */
@@ -25,9 +25,9 @@ int isLetter(wchar_t c)
 
 /**
  * @brief Check if a character is a consonant.
- * 
+ *
  * Checks if the given character is a consonant.
- * 
+ *
  * @param c The character to check
  * @return 1 if the character is a consonant, otherwise 0
  */
@@ -38,9 +38,9 @@ int isConsonant(wchar_t c)
 
 /**
  * @brief Extracts a simple letter from a complex letter.
- * 
+ *
  * Extracts a simple letter from a complex letter if applicable.
- * 
+ *
  * @param letter Pointer to the letter to extract
  */
 void extractLetter(wchar_t *letter)
@@ -61,9 +61,9 @@ void extractLetter(wchar_t *letter)
 
 /**
  * @brief Creates worker threads.
- * 
+ *
  * Creates the specified number of worker threads using the given FIFO queue and thread data.
- * 
+ *
  * @param numThreads Number of worker threads to create
  * @param fifo Pointer to the FIFO queue
  * @param threads Array to store thread IDs
@@ -88,9 +88,9 @@ void createThreads(int numThreads, Queue *fifo, pthread_t *threads, ThreadData *
 
 /**
  * @brief Joins worker threads.
- * 
+ *
  * Waits for the specified number of worker threads to finish execution and joins them.
- * 
+ *
  * @param numThreads Number of worker threads to join
  * @param threads Array of thread IDs
  */
@@ -110,9 +110,9 @@ void joinThreads(int numThreads, pthread_t *threads)
 
 /**
  * @brief Thread start routine.
- * 
+ *
  * Start routine for worker threads. Handles the processing of chunks.
- * 
+ *
  * @param arg Pointer to thread data
  * @return NULL
  */
@@ -153,9 +153,9 @@ void *threadStartRoutine(void *arg)
 
 /**
  * @brief Process a chunk.
- * 
+ *
  * Processes a chunk of data from the file associated with the given file pointer.
- * 
+ *
  * @param file File pointer to the input file
  * @param chunk Pointer to the chunk to process
  * @param threadID ID of the thread processing the chunk
@@ -164,6 +164,11 @@ void processChunk(FILE *file, Chunk *chunk, pthread_t threadID)
 {
     // Seek to the start of the chunk
     fseek(file, chunk->start, SEEK_SET);
+
+    FILE *temp_file = file;
+
+    int temp_end = chunk->end;
+    int temp_start = chunk->start;
 
     int wordCount = 0;
     int inWord = 0;
@@ -218,6 +223,23 @@ void processChunk(FILE *file, Chunk *chunk, pthread_t threadID)
 
     chunk->wordsCount = wordCount;
     chunk->wordsWithConsonants = matchWords;
+
+    if (wordCount == 0)
+    {
+        // print the entre chunk
+        fseek(temp_file, temp_start, SEEK_SET);
+        printf("temp_start: %d\n", temp_start);
+        printf("temp_end: %d\n", temp_end);
+        wchar_t c;
+
+        while ((c = fgetwc(file)) != WEOF && ftell(file) <= chunk->end)
+        {
+            printf("Reading character: %lc at position: %ld\n", c, ftell(file));
+        }
+
+        // wait 30 seconds
+        sleep(30);
+    }
 
     // Update the corresponding File structure for the file being processed
     for (int i = 0; i < MAX_FILES; i++)
