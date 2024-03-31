@@ -14,9 +14,18 @@
 #define DEFAULT_THREAD_SIZE 4096
 #define MAX_FILES 20 
 
-
 static double get_delta_time(void);
 
+/**
+ * @brief Main function
+ * 
+ * The main function of the program. Reads command-line arguments, initializes file structures, 
+ * and starts worker threads to process file chunks.
+ * 
+ * @param argc Number of command-line arguments
+ * @param argv Array of command-line arguments
+ * @return Exit status
+ */
 int main(int argc, char* argv[]) {
     int numThreads = 4; // Default number of threads
     int threadSize = DEFAULT_THREAD_SIZE; // Default size of thread's chunk (4000 bytes)
@@ -96,12 +105,14 @@ int main(int argc, char* argv[]) {
     for (int i = 0; i < numFiles; i++) {
         free(filenames[i]);
     }
-
-    
-
     return 0;
 }
 
+/**
+ * @brief Get the process time that has elapsed since last call of this time.
+ * 
+ * @return Process elapsed time
+ */
 static double get_delta_time(void)
 {
     static struct timespec t0, t1;

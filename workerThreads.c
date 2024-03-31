@@ -10,16 +10,39 @@
 
 #include "sharedRegion.h"
 
+/**
+ * @brief Check if a character is a letter or underscore.
+ * 
+ * Checks if the given character is a letter (alphabetic character or underscore).
+ * 
+ * @param c The character to check
+ * @return 1 if the character is a letter or underscore, otherwise 0
+ */
 int isLetter(wchar_t c)
 {
     return iswalnum(c) || c == L'_';
 }
 
+/**
+ * @brief Check if a character is a consonant.
+ * 
+ * Checks if the given character is a consonant.
+ * 
+ * @param c The character to check
+ * @return 1 if the character is a consonant, otherwise 0
+ */
 int isConsonant(wchar_t c)
 {
     return wcschr(L"bcdfghjklmnpqrstvwxyz", c) != NULL;
 }
 
+/**
+ * @brief Extracts a simple letter from a complex letter.
+ * 
+ * Extracts a simple letter from a complex letter if applicable.
+ * 
+ * @param letter Pointer to the letter to extract
+ */
 void extractLetter(wchar_t *letter)
 {
     *letter = towlower(*letter);
@@ -36,6 +59,16 @@ void extractLetter(wchar_t *letter)
     }
 }
 
+/**
+ * @brief Creates worker threads.
+ * 
+ * Creates the specified number of worker threads using the given FIFO queue and thread data.
+ * 
+ * @param numThreads Number of worker threads to create
+ * @param fifo Pointer to the FIFO queue
+ * @param threads Array to store thread IDs
+ * @param threadData Array of thread data structures
+ */
 void createThreads(int numThreads, Queue *fifo, pthread_t *threads, ThreadData *threadData)
 {
     for (int i = 0; i < numThreads; i++)
@@ -53,6 +86,14 @@ void createThreads(int numThreads, Queue *fifo, pthread_t *threads, ThreadData *
     }
 }
 
+/**
+ * @brief Joins worker threads.
+ * 
+ * Waits for the specified number of worker threads to finish execution and joins them.
+ * 
+ * @param numThreads Number of worker threads to join
+ * @param threads Array of thread IDs
+ */
 void joinThreads(int numThreads, pthread_t *threads)
 {
     for (int i = 0; i < numThreads; i++)
@@ -67,7 +108,14 @@ void joinThreads(int numThreads, pthread_t *threads)
     }
 }
 
-// Thread start routine
+/**
+ * @brief Thread start routine.
+ * 
+ * Start routine for worker threads. Handles the processing of chunks.
+ * 
+ * @param arg Pointer to thread data
+ * @return NULL
+ */
 void *threadStartRoutine(void *arg)
 {
     ThreadData *data = (ThreadData *)arg;
@@ -103,7 +151,15 @@ void *threadStartRoutine(void *arg)
     return NULL;
 }
 
-// Function to process a chunk
+/**
+ * @brief Process a chunk.
+ * 
+ * Processes a chunk of data from the file associated with the given file pointer.
+ * 
+ * @param file File pointer to the input file
+ * @param chunk Pointer to the chunk to process
+ * @param threadID ID of the thread processing the chunk
+ */
 void processChunk(FILE *file, Chunk *chunk, pthread_t threadID)
 {
     // Seek to the start of the chunk
