@@ -1,3 +1,14 @@
+/**
+ * \file workerThreads.c
+ * 
+ * \brief Worker threads implementation
+ * 
+ * This file contains the implementation of worker threads that process chunks of data from input files.
+ * 
+ * \author Guilherme Antunes - 103600
+ * \author Pedro Rasinhas - 103541
+*/
+
 #include "workerThreads.h"
 #include <stdio.h>
 #include <stdlib.h>

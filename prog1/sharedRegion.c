@@ -1,3 +1,14 @@
+/**
+ * \file sharedRegion.c
+ *
+ * \brief Functions for shared region.
+ *
+ * This file contains the implementation of functions for the shared region of the program.
+ *
+ * \author Guilherme Antunes - 103600
+ * \author Pedro Rasinhas - 103541
+ */
+
 #include "sharedRegion.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -7,15 +18,15 @@
 #include <wctype.h>
 #include <wchar.h>
 
-File fileStats[MAX_FILES]; /**< Array to store statistics for each file */
+File fileStats[MAX_FILES];                                  /**< Array to store statistics for each file */
 pthread_mutex_t fileStatsMutex = PTHREAD_MUTEX_INITIALIZER; /**< Mutex for file statistics */
-pthread_mutex_t queue_mutex = PTHREAD_MUTEX_INITIALIZER; /**< Mutex for queue */
+pthread_mutex_t queue_mutex = PTHREAD_MUTEX_INITIALIZER;    /**< Mutex for queue */
 
 /**
  * @brief Initializes file structures.
- * 
+ *
  * Initializes the file structures for each file in the given array of filenames.
- * 
+ *
  * @param filenames Array of filenames
  * @param numFiles Number of filenames in the array
  */
@@ -32,9 +43,9 @@ void initFileStructures(char **filenames, int numFiles)
 
 /**
  * @brief Initializes a FIFO queue.
- * 
+ *
  * Initializes the given FIFO queue with default values.
- * 
+ *
  * @param q Pointer to the FIFO queue
  */
 void initQueue(Queue *q)
@@ -49,9 +60,9 @@ void initQueue(Queue *q)
 
 /**
  * @brief Enqueues chunks into the FIFO queue.
- * 
+ *
  * Enqueues chunks of data into the FIFO queue for processing by worker threads, making sure that the chunks dont end in the middle of a word.
- * 
+ *
  * @param q Pointer to the FIFO queue
  * @param filenames Array of filenames
  * @param numFiles Number of filenames in the array
@@ -59,11 +70,8 @@ void initQueue(Queue *q)
  */
 void enqueueChunks(Queue *q, char **filenames, int numFiles, int threadSize)
 {
-    if (pthread_mutex_lock(&queue_mutex) != 0)
-    {
-        perror("Error locking mutex");
-        exit(EXIT_FAILURE);
-    }
+    // Lock the mutex before accessing the queue
+    mutex_lock();
 
     for (int i = 0; i < numFiles; i++)
     {
@@ -71,8 +79,9 @@ void enqueueChunks(Queue *q, char **filenames, int numFiles, int threadSize)
         if (stat(filenames[i], &st) == 0)
         {
             int fileSize = st.st_size;
-            int chunks = (fileSize + threadSize - 1) / threadSize;
-            printf("File: %s [%d] (%d)\n", filenames[i], fileSize, chunks);
+            int chunks = (fileSize + threadSize - 1) / threadSize; // Calculate number of chunks
+            printf("File: %s [%d] (%d)", filenames[i], fileSize, chunks);
+            printf("\n");
             int start = 0;
 
             if (q->rear != NULL && strcmp(q->rear->chunk->filename, filenames[i]) == 0)
@@ -88,33 +97,37 @@ void enqueueChunks(Queue *q, char **filenames, int numFiles, int threadSize)
                 chunk->start = start;
                 chunk->wordsCount = 0;
                 chunk->wordsWithConsonants = 0;
-
+                // before enqueuing the chunk, check if the chunk is "perfect" (ends outside of a word) -> if not, adjust the end
                 FILE *file = fopen(filenames[i], "rb");
                 if (file == NULL)
                 {
                     perror("Error opening file");
-                    free(chunk); // Free allocated memory for chunk
                     return;
                 }
 
-                // Adjust the end position to ensure it does not end in the middle of a word
+                // Seek to the end of the chunk
                 fseek(file, end, SEEK_SET);
+
                 wchar_t c;
                 while ((c = fgetwc(file)) != WEOF)
                 {
                     if ((iswalnum(c) || c == L'_' || c == L'’' || c == L'‘' || c == L'\''))
                     {
-                        end--; // Move the end position back
+                        printf("Found a word character at the end of the chunk [%d-%d] in file %s\n", start, end, filenames[i]);
+                        printf("Previous end: %d\n", end);
+                        end++;
+                        printf("New end: %d\n", end);
                     }
                     else
                     {
                         break;
                     }
                 }
+                printf("\n");
+                printf("Enqueuing chunk from file %s [%d-%d]\n", chunk->filename, chunk->start, end);
                 chunk->end = end;
                 enqueue(q, chunk);
                 start = end + 1;
-                fclose(file);
             }
         }
         else
@@ -124,30 +137,21 @@ void enqueueChunks(Queue *q, char **filenames, int numFiles, int threadSize)
         }
     }
 
-    if (pthread_mutex_unlock(&queue_mutex) != 0)
-    {
-        perror("Error unlocking mutex");
-        exit(EXIT_FAILURE);
-    }
+    // Unlock the mutex after accessing the queue
+    mutex_unlock();
 }
-
 
 /**
  * @brief Enqueues a chunk into the FIFO queue.
- * 
+ *
  * Enqueues the given chunk into the FIFO queue.
- * 
+ *
  * @param q Pointer to the FIFO queue
  * @param chunk Pointer to the chunk to enqueue
  */
 void enqueue(Queue *q, Chunk *chunk)
 {
-
-    if (pthread_mutex_lock(&q->mutex) != 0)
-    {
-        perror("Error locking mutex");
-        exit(EXIT_FAILURE);
-    }
+    mutex_lock();
 
     Node *newNode = (Node *)malloc(sizeof(Node));
     newNode->chunk = chunk;
@@ -164,28 +168,20 @@ void enqueue(Queue *q, Chunk *chunk)
         q->rear = newNode;
     }
 
-    if (pthread_mutex_unlock(&q->mutex) != 0)
-    {
-        perror("Error unlocking mutex");
-        exit(EXIT_FAILURE);
-    }
+    mutex_unlock();
 }
 
 /**
  * @brief Dequeues a chunk from the FIFO queue.
- * 
+ *
  * Dequeues a chunk from the FIFO queue and returns a pointer to it.
- * 
+ *
  * @param q Pointer to the FIFO queue
  * @return Pointer to the dequeued chunk
  */
-Chunk *dequeue(Queue *q, pthread_t threadID)
+Chunk *dequeue(Queue *q)
 {
-    if (pthread_mutex_lock(&q->mutex) != 0)
-    {
-        perror("Error locking mutex");
-        exit(EXIT_FAILURE);
-    }
+    mutex_lock();
 
     if (q->front == NULL)
     {
@@ -202,28 +198,21 @@ Chunk *dequeue(Queue *q, pthread_t threadID)
         Chunk *chunk = temp->chunk;
         q->front = q->front->next;
         free(temp);
-
         if (q->front == NULL)
         {
             q->rear = NULL;
         }
 
-        printf("Thread %ld, dequeued chunk from file %s [%d-%d]\n\n", threadID, chunk->filename, chunk->start, chunk->end);
-
-        if (pthread_mutex_unlock(&q->mutex) != 0)
-        {
-            perror("Error unlocking mutex");
-            exit(EXIT_FAILURE);
-        }
+        mutex_unlock();
         return chunk;
     }
 }
 
 /**
  * @brief Update the file statistics.
- * 
+ *
  * Update the statistics for the specified file with the given word counts.
- * 
+ *
  * @param filename Name of the file
  * @param numWords Number of words processed
  * @param numWordsWithConsonants Number of words with consonants processed
@@ -231,11 +220,8 @@ Chunk *dequeue(Queue *q, pthread_t threadID)
  */
 void updateFileStats(char *filename, int numWords, int numWordsWithConsonants, pthread_t threadID)
 {
-    if (pthread_mutex_lock(&fileStatsMutex) != 0)
-    {
-        perror("Error locking mutex");
-        exit(EXIT_FAILURE);
-    }
+    mutex_lock();
+
     for (int i = 0; i < MAX_FILES; i++)
     {
         if (strcmp(fileStats[i].filename, filename) == 0)
@@ -246,9 +232,6 @@ void updateFileStats(char *filename, int numWords, int numWordsWithConsonants, p
             break;
         }
     }
-    if (pthread_mutex_unlock(&fileStatsMutex) != 0)
-    {
-        perror("Error unlocking mutex");
-        exit(EXIT_FAILURE);
-    }
+
+    mutex_unlock();
 }
