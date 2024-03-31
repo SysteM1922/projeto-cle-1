@@ -1,7 +1,0 @@
-{
-  "files.associations": {
-    "stat.h": "c",
-    "sharedregion.h": "c",
-    "wchar.h": "c"
-  }
-}
