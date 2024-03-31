@@ -1,3 +1,14 @@
+/**
+ * \file sharedMemory.c
+ * 
+ * \brief Shared Memory module.
+ * 
+ * This module provides the shared memory functions implementation.
+ * 
+ * \author Guilherme Antunes - 103600
+ * \author Pedro Rasinhas - 103541
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <pthread.h>
@@ -67,9 +78,14 @@ static SubArray *workersWork;
 /** \brief sub arrays */
 static SubArray *subArrays;
 
+/**
+ * \brief Function mutex_lock.
+ * 
+ * Locks the access to the shared memory.
+ */
 void mutex_lock()
 {
-    if ((statusMon = pthread_mutex_lock(&accessCR)) != 0)
+    if ((statusMon = pthread_mutex_lock(&accessCR)) != 0)       /* lock access to shared memory */
     {
         errno = statusMon;
         perror("error on entering monitor(CF)");
@@ -78,9 +94,14 @@ void mutex_lock()
     }
 }
 
+/**
+ * \brief Function mutex_unlock.
+ * 
+ * Unlocks the access to the shared memory.
+ */
 void mutex_unlock()
 {
-    if ((statusMon = pthread_mutex_unlock(&accessCR)) != 0)
+    if ((statusMon = pthread_mutex_unlock(&accessCR)) != 0)     /* unlock access to shared memory */
     {
         errno = statusMon;
         perror("error on exiting monitor(CF)");
@@ -89,34 +110,40 @@ void mutex_unlock()
     }
 }
 
+
+/**
+ * \brief Function initializeSharedMemory.
+ * 
+ * Initializes the shared memory.
+ */
 void initializeSharedMemory()
 {
-    if ((notFinishedWorkers = (bool *)malloc(nThreads * sizeof(bool))) == NULL)
+    if ((notFinishedWorkers = (bool *)malloc(nThreads * sizeof(bool))) == NULL)     /* allocate memory for workers status */
     {
         perror("error on allocating memory for workers status");
         exit(EXIT_FAILURE);
     }
 
-    if ((requestingWork = (bool *)malloc(nThreads * sizeof(bool))) == NULL)
+    if ((requestingWork = (bool *)malloc(nThreads * sizeof(bool))) == NULL)         /* allocate memory for workers request */
     {
         perror("error on allocating memory for workers request");
         exit(EXIT_FAILURE);
     }
 
-    if ((assignedWork = (bool *)malloc(nThreads * sizeof(bool))) == NULL)
+    if ((assignedWork = (bool *)malloc(nThreads * sizeof(bool))) == NULL)           /* allocate memory for workers assigned */
     {
         perror("error on allocating memory for workers assigned");
         exit(EXIT_FAILURE);
     }
 
-    if ((completedWork = (bool *)malloc(nThreads * sizeof(bool))) == NULL)
+    if ((completedWork = (bool *)malloc(nThreads * sizeof(bool))) == NULL)          /* allocate memory for workers completed */
     {
         perror("error on allocating memory for workers completed");
         exit(EXIT_FAILURE);
     }
 
     int i;
-    for (i = 0; i < nThreads; i++)
+    for (i = 0; i < nThreads; i++)          /* initialize workers flags */
     {
         assignedWork[i] = false;
         requestingWork[i] = false;
@@ -124,42 +151,59 @@ void initializeSharedMemory()
         notFinishedWorkers[i] = true;
     }
 
-    if ((workersWork = (SubArray *)malloc(nThreads * sizeof(SubArray))) == NULL)
+    if ((workersWork = (SubArray *)malloc(nThreads * sizeof(SubArray))) == NULL)        /* allocate memory for workers data */
     {
         perror("error on allocating memory for workers data");
         exit(EXIT_FAILURE);
     }
 
-    pthread_cond_init(&workRequest, NULL);
-    pthread_cond_init(&workCompleted, NULL);
-    pthread_cond_init(&workAssigned, NULL);
+    pthread_cond_init(&workRequest, NULL);      /* initialize work request condition */
+    pthread_cond_init(&workCompleted, NULL);    /* initialize work completed condition */
+    pthread_cond_init(&workAssigned, NULL);     /* initialize work assigned condition */
 }
 
+/**
+ * \brief Function distributeSubArrays.
+ * 
+ * Put the sub arrays in the shared memory.
+ * 
+ * \param arraySub sub arrays
+ * \param array full array
+ * \param subSize sub array size
+ * \param fullSize full array size
+ */
 void distributeSubArrays(SubArray *arraySub, int *array, int subSize, int fullSize)
 {
     mutex_lock();
     pthread_once(&init, initializeSharedMemory);
 
-    if ((fullArray = (int *)malloc(fullSize * sizeof(int))) == NULL)
+    if ((fullArray = (int *)malloc(fullSize * sizeof(int))) == NULL)            /* allocate memory for full array */
     {
         perror("error on allocating memory for full array");
         exit(EXIT_FAILURE);
     }
 
-    if ((subArrays = (SubArray *)malloc(subSize * sizeof(SubArray))) == NULL)
+    if ((subArrays = (SubArray *)malloc(subSize * sizeof(SubArray))) == NULL)   /* allocate memory for sub arrays */
     {
         perror("error on allocating memory for sub arrays");
         exit(EXIT_FAILURE);
     }
 
-    memcpy(subArrays, arraySub, subSize * sizeof(SubArray));
-    memcpy(fullArray, array, fullSize * sizeof(int));
+    memcpy(subArrays, arraySub, subSize * sizeof(SubArray));            /* copy sub arrays to shared memory */
+    memcpy(fullArray, array, fullSize * sizeof(int));                   /* copy full array to shared memory */
 
     subArraySize = subSize;
 
     mutex_unlock();
 }
 
+/**
+ * \brief Function sortCompleted.
+ * 
+ * Checks if the sort is completed.
+ * 
+ * \return true if the sort is completed, false otherwise
+ */
 bool sortCompleted()
 {
     if (subArrays[0].completed)
@@ -174,11 +218,27 @@ bool sortCompleted()
     return false;
 }
 
+/**
+ * \brief Function notFinished.
+ * 
+ * Checks if the worker is not finished.
+ * 
+ * \param id worker id
+ * \return true if the worker is not finished, false otherwise
+ */
 int notFinished(int id)
 {
     return notFinishedWorkers[id];
 }
 
+/**
+ * \brief Function requestWork.
+ * 
+ * Requests work to the distributor.
+ * 
+ * \param id worker id
+ * \param subArray sub array
+ */
 void requestWork(int id, SubArray *subArray)
 {
     mutex_lock();
@@ -191,7 +251,7 @@ void requestWork(int id, SubArray *subArray)
 
     while (!assignedWork[id] && notFinishedWorkers[id])
     {
-        if ((statusWor[id] = pthread_cond_wait(&workAssigned, &accessCR)) != 0)
+        if ((statusWor[id] = pthread_cond_wait(&workAssigned, &accessCR)) != 0)     /* wait for work assignment */
         {
             errno = statusMon;
             perror("error on waiting for work assignment");
@@ -200,7 +260,7 @@ void requestWork(int id, SubArray *subArray)
         }
     }
 
-    if (notFinishedWorkers[id])
+    if (notFinishedWorkers[id])     
     {
         *subArray = workersWork[id];
         assignedWork[id] = false;
@@ -209,6 +269,14 @@ void requestWork(int id, SubArray *subArray)
     mutex_unlock();
 }
 
+/**
+ * \brief Function getWorkerWork.
+ * 
+ * Gets the worker work.
+ * 
+ * \param id worker id
+ * \return sub array
+ */
 SubArray getWorkerWork(int id)
 {
     int flag = -1;
@@ -231,6 +299,13 @@ SubArray getWorkerWork(int id)
     return subArray;
 }
 
+/**
+ * \brief Function completeWork.
+ * 
+ * Completes the work.
+ * 
+ * \param id worker id
+ */
 void completeWork(int id)
 {
     mutex_lock();
@@ -240,7 +315,7 @@ void completeWork(int id)
 
     waitingComplete = true;
 
-    if ((statusWor[id] = pthread_cond_signal(&workCompleted)) != 0)
+    if ((statusWor[id] = pthread_cond_signal(&workCompleted)) != 0)     /* signal work completion */
     {
         errno = statusWor[id];
         perror("error on signaling work completion");
@@ -251,6 +326,11 @@ void completeWork(int id)
     mutex_unlock();
 }
 
+/**
+ * \brief Function waitForWorkRequest.
+ * 
+ * Distributor waits for work request.
+ */
 void waitForWorkRequest()
 {
     mutex_lock();
@@ -258,7 +338,7 @@ void waitForWorkRequest()
 
     while (!waitingWork)
     {
-        if (pthread_cond_wait(&workRequest, &accessCR) != 0)
+        if (pthread_cond_wait(&workRequest, &accessCR) != 0)        /* wait for work request */
         {
             perror("error on waiting for work request");
             statusMon = EXIT_FAILURE;
@@ -293,7 +373,7 @@ void waitForWorkRequest()
         }
     }
 
-    if ((statusDis = pthread_cond_broadcast(&workAssigned)) != 0)
+    if ((statusDis = pthread_cond_broadcast(&workAssigned)) != 0)       /* signal work assignment */
     {
         errno = statusDis;
         perror("error on signaling work assignment");
@@ -306,6 +386,11 @@ void waitForWorkRequest()
     mutex_unlock();
 }
 
+/**
+ * \brief Function waitForWorkComplete.
+ * 
+ * Distributor waits for work completion.
+ */
 void waitForWorkComplete()
 {
     mutex_lock();
@@ -313,7 +398,7 @@ void waitForWorkComplete()
 
     while (!waitingComplete)
     {
-        if (pthread_cond_wait(&workCompleted, &accessCR) != 0)
+        if (pthread_cond_wait(&workCompleted, &accessCR) != 0)      /* wait for work completion */
         {
             perror("error on waiting for work completion");
             statusMon = EXIT_FAILURE;
@@ -337,6 +422,13 @@ void waitForWorkComplete()
     mutex_unlock();
 }
 
+/**
+ * \brief Function putFileName.
+ * 
+ * Puts the file name in the shared memory.
+ * 
+ * \param file file name
+ */
 void putFileName(char *file)
 {
     mutex_lock();
@@ -347,6 +439,13 @@ void putFileName(char *file)
     mutex_unlock();
 }
 
+/**
+ * \brief Function getFileName.
+ * 
+ * Gets the file name from the shared memory.
+ * 
+ * \param file file name
+ */
 void getFileName(char **file)
 {
     mutex_lock();
@@ -357,28 +456,53 @@ void getFileName(char **file)
     mutex_unlock();
 }
 
+/**
+ * \brief Function putArray.
+ * 
+ * Puts the array in the shared memory.
+ * 
+ * \param array array
+ * \param start start index
+ * \param size array size
+ */
 void putArray(int *array, int start, int size)
 {
     mutex_lock();
     pthread_once(&init, initializeSharedMemory);
 
-    memcpy(fullArray + start, array, size * sizeof(int));
+    memcpy(fullArray + start, array, size * sizeof(int));       /* copy array to shared memory */
     free(array);
 
     mutex_unlock();
 }
 
+/**
+ * \brief Function getArray.
+ * 
+ * Gets the array from the shared memory.
+ * 
+ * \param array array
+ * \param start start index
+ * \param size array size
+ */
 void getArray(int **array, int start, int size)
 {
     mutex_lock();
     pthread_once(&init, initializeSharedMemory);
 
     *array = malloc(size * sizeof(int));
-    memcpy(*array, fullArray + start, size * sizeof(int));
+    memcpy(*array, fullArray + start, size * sizeof(int));      /* copy array from shared memory */
 
     mutex_unlock();
 }
 
+/**
+ * \brief Function getFullArray.
+ * 
+ * Gets the full array from the shared memory.
+ * 
+ * \param array full array
+ */
 void getFullArray(int **array)
 {
     mutex_lock();

@@ -1,3 +1,14 @@
+/**
+ * \file distributor.c
+ * 
+ * \brief Distributor module.
+ * 
+ * This module provides the distributor function implementation.
+ * 
+ * \author Guilherme Antunes - 103600
+ * \author Pedro Rasinhas - 103541
+*/
+
 #include <stdio.h>
 #include <pthread.h>
 #include <stdlib.h>
@@ -18,13 +29,12 @@ extern int statusDis;
 extern int nThreads;
 
 /**
- *  \brief Function worker.
+ *  \brief Function distributor.
  *
  *  Its role is to simulate the life cycle of the distributor.
  *
  *  \param par pointer to passed distributor arguments
  */
-
 void *distributor(void *par)
 {
     FILE *file;     /* file pointer */

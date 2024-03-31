@@ -1,0 +1,66 @@
+\hypertarget{distributor_8c}{}\doxysection{distributor.\+c File Reference}
+\label{distributor_8c}\index{distributor.c@{distributor.c}}
+
+
+Distributor module.  
+
+
+{\ttfamily \#include $<$stdio.\+h$>$}\newline
+{\ttfamily \#include $<$pthread.\+h$>$}\newline
+{\ttfamily \#include $<$stdlib.\+h$>$}\newline
+{\ttfamily \#include $<$math.\+h$>$}\newline
+{\ttfamily \#include $<$stdbool.\+h$>$}\newline
+{\ttfamily \#include \char`\"{}structs.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}distributor.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}shared\+Memory.\+h\char`\"{}}\newline
+Include dependency graph for distributor.\+c\+:
+% FIG 0
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void $\ast$ \mbox{\hyperlink{distributor_8c_a924b225003efa9262536392d1a0341d6}{distributor}} (void $\ast$par)
+\begin{DoxyCompactList}\small\item\em Function distributor. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{distributor_8c_a8ebe37a1aff34f1aaaf43829c6906e1d}\label{distributor_8c_a8ebe37a1aff34f1aaaf43829c6906e1d}} 
+int \mbox{\hyperlink{distributor_8c_a8ebe37a1aff34f1aaaf43829c6906e1d}{full\+Size}}
+\begin{DoxyCompactList}\small\item\em full array size \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{distributor_8c_a73e998ac007f95080ce9c67357226df0}\label{distributor_8c_a73e998ac007f95080ce9c67357226df0}} 
+int \mbox{\hyperlink{distributor_8c_a73e998ac007f95080ce9c67357226df0}{status\+Dis}}
+\begin{DoxyCompactList}\small\item\em distributor thread return status \end{DoxyCompactList}\item 
+\mbox{\Hypertarget{distributor_8c_a8adda9db6d1fb7be6f86999c24c75ab0}\label{distributor_8c_a8adda9db6d1fb7be6f86999c24c75ab0}} 
+int \mbox{\hyperlink{distributor_8c_a8adda9db6d1fb7be6f86999c24c75ab0}{n\+Threads}}
+\begin{DoxyCompactList}\small\item\em number of threads available at the beginning of the program \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Distributor module. 
+
+This module provides the distributor function implementation.
+
+\begin{DoxyAuthor}{Author}
+Guilherme Antunes -\/ 103600 
+
+Pedro Rasinhas -\/ 103541 
+\end{DoxyAuthor}
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{distributor_8c_a924b225003efa9262536392d1a0341d6}\label{distributor_8c_a924b225003efa9262536392d1a0341d6}} 
+\index{distributor.c@{distributor.c}!distributor@{distributor}}
+\index{distributor@{distributor}!distributor.c@{distributor.c}}
+\doxysubsubsection{\texorpdfstring{distributor()}{distributor()}}
+{\footnotesize\ttfamily void$\ast$ distributor (\begin{DoxyParamCaption}\item[{void $\ast$}]{par }\end{DoxyParamCaption})}
+
+
+
+Function distributor. 
+
+Its role is to simulate the life cycle of the distributor.
+
+
+\begin{DoxyParams}{Parameters}
+{\em par} & pointer to passed distributor arguments \\
+\hline
+\end{DoxyParams}

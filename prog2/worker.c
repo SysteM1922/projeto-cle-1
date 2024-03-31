@@ -1,3 +1,14 @@
+/**
+ * \file worker.h
+ * 
+ * \brief Worker module.
+ * 
+ * This module provides the worker function implementation.
+ * 
+ * \author Guilherme Antunes - 103600
+ * \author Pedro Rasinhas - 103541
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <pthread.h>

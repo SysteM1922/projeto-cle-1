@@ -1,3 +1,14 @@
+/**
+ * \file sharedMemory.h
+ * 
+ * \brief Shared Memory module.
+ * 
+ * This module provides the shared memory functions.
+ * 
+ * \author Guilherme Antunes - 103600
+ * \author Pedro Rasinhas - 103541
+*/
+
 #ifndef SHARED_MEMORY_H
 #define SHARED_MEMORY_H
 

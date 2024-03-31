@@ -1,0 +1,299 @@
+\hypertarget{sharedMemory_8h}{}\doxysection{shared\+Memory.\+h File Reference}
+\label{sharedMemory_8h}\index{sharedMemory.h@{sharedMemory.h}}
+
+
+Shared Memory module.  
+
+
+{\ttfamily \#include $<$stdbool.\+h$>$}\newline
+{\ttfamily \#include \char`\"{}structs.\+h\char`\"{}}\newline
+Include dependency graph for shared\+Memory.\+h\+:
+% FIG 0
+This graph shows which files directly or indirectly include this file\+:
+% FIG 1
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{sharedMemory_8h_a75720fc6be3c4429697103d7f2b962f5}{put\+Array}} (int $\ast$array, int start, int size)
+\begin{DoxyCompactList}\small\item\em Function put\+Array. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{sharedMemory_8h_a2c4d2cf43df86e67ad415d9b079b67bc}{get\+Array}} (int $\ast$$\ast$array, int start, int size)
+\begin{DoxyCompactList}\small\item\em Function get\+Array. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{sharedMemory_8h_a5771f627dfb464188c62f346f6b7ee4e}{get\+Full\+Array}} (int $\ast$$\ast$array)
+\begin{DoxyCompactList}\small\item\em Function get\+Full\+Array. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{sharedMemory_8h_a92335a4545f87bc5988c7d229ac2f037}{put\+File\+Name}} (char $\ast$\mbox{\hyperlink{sharedMemory_8c_a25c8761bc1f523fe6a53db546ae83add}{file\+Name}})
+\begin{DoxyCompactList}\small\item\em Function put\+File\+Name. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{sharedMemory_8h_ac9164dd7fc534a4a456ffe3bd893a52a}{get\+File\+Name}} (char $\ast$$\ast$\mbox{\hyperlink{sharedMemory_8c_a25c8761bc1f523fe6a53db546ae83add}{file\+Name}})
+\begin{DoxyCompactList}\small\item\em Function get\+File\+Name. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{sharedMemory_8h_a5bee5378979bc31c5bfc8de8ddf76f62}{distribute\+Sub\+Arrays}} (\mbox{\hyperlink{structSubArray}{Sub\+Array}} $\ast$array\+Sub, int $\ast$full\+Array, int sub\+Size, int \mbox{\hyperlink{main_8c_a8ebe37a1aff34f1aaaf43829c6906e1d}{full\+Size}})
+\begin{DoxyCompactList}\small\item\em Function distribute\+Sub\+Arrays. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{sharedMemory_8h_a1b833652be95c0da02e5b19d4fe94df3}{complete\+Work}} (int id)
+\begin{DoxyCompactList}\small\item\em Function complete\+Work. \end{DoxyCompactList}\item 
+bool \mbox{\hyperlink{sharedMemory_8h_ad5ac5f9fc469d745cabbf61244c85d09}{sort\+Completed}} ()
+\begin{DoxyCompactList}\small\item\em Function sort\+Completed. \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{sharedMemory_8h_a551736e0cf14a3ec59d4c92d8ce067d1}{not\+Finished}} (int id)
+\begin{DoxyCompactList}\small\item\em Function not\+Finished. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{sharedMemory_8h_a28d9b0caeb17a41766df9a4c378de315}{request\+Work}} (int id, \mbox{\hyperlink{structSubArray}{Sub\+Array}} $\ast$sub\+Array)
+\begin{DoxyCompactList}\small\item\em Function request\+Work. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{sharedMemory_8h_a4d3f791f1ca139841826f89e41039236}{wait\+For\+Work\+Request}} ()
+\begin{DoxyCompactList}\small\item\em Function wait\+For\+Work\+Request. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{sharedMemory_8h_a8cc7518025ad62dceb39d08d99864318}{wait\+For\+Work\+Complete}} ()
+\begin{DoxyCompactList}\small\item\em Function wait\+For\+Work\+Complete. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{sharedMemory_8h_a630d04f8f098510c00c6aa747a05388a}{initialize\+Shared\+Memory}} ()
+\begin{DoxyCompactList}\small\item\em Function initialize\+Shared\+Memory. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{sharedMemory_8h_a840f6d3b8a463d4dd61c837d4206b758}{mutex\+\_\+lock}} ()
+\begin{DoxyCompactList}\small\item\em Function mutex\+\_\+lock. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{sharedMemory_8h_ac096e7375b982c41169bbf4645d88846}{mutex\+\_\+unlock}} ()
+\begin{DoxyCompactList}\small\item\em Function mutex\+\_\+unlock. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Shared Memory module. 
+
+This module provides the shared memory functions.
+
+\begin{DoxyAuthor}{Author}
+Guilherme Antunes -\/ 103600 
+
+Pedro Rasinhas -\/ 103541 
+\end{DoxyAuthor}
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{sharedMemory_8h_a1b833652be95c0da02e5b19d4fe94df3}\label{sharedMemory_8h_a1b833652be95c0da02e5b19d4fe94df3}} 
+\index{sharedMemory.h@{sharedMemory.h}!completeWork@{completeWork}}
+\index{completeWork@{completeWork}!sharedMemory.h@{sharedMemory.h}}
+\doxysubsubsection{\texorpdfstring{completeWork()}{completeWork()}}
+{\footnotesize\ttfamily void complete\+Work (\begin{DoxyParamCaption}\item[{int}]{id }\end{DoxyParamCaption})}
+
+
+
+Function complete\+Work. 
+
+Completes the work.
+
+
+\begin{DoxyParams}{Parameters}
+{\em id} & worker id \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{sharedMemory_8h_a5bee5378979bc31c5bfc8de8ddf76f62}\label{sharedMemory_8h_a5bee5378979bc31c5bfc8de8ddf76f62}} 
+\index{sharedMemory.h@{sharedMemory.h}!distributeSubArrays@{distributeSubArrays}}
+\index{distributeSubArrays@{distributeSubArrays}!sharedMemory.h@{sharedMemory.h}}
+\doxysubsubsection{\texorpdfstring{distributeSubArrays()}{distributeSubArrays()}}
+{\footnotesize\ttfamily void distribute\+Sub\+Arrays (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structSubArray}{Sub\+Array}} $\ast$}]{array\+Sub,  }\item[{int $\ast$}]{array,  }\item[{int}]{sub\+Size,  }\item[{int}]{full\+Size }\end{DoxyParamCaption})}
+
+
+
+Function distribute\+Sub\+Arrays. 
+
+Put the sub arrays in the shared memory.
+
+
+\begin{DoxyParams}{Parameters}
+{\em array\+Sub} & sub arrays \\
+\hline
+{\em array} & full array \\
+\hline
+{\em sub\+Size} & sub array size \\
+\hline
+{\em full\+Size} & full array size \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{sharedMemory_8h_a2c4d2cf43df86e67ad415d9b079b67bc}\label{sharedMemory_8h_a2c4d2cf43df86e67ad415d9b079b67bc}} 
+\index{sharedMemory.h@{sharedMemory.h}!getArray@{getArray}}
+\index{getArray@{getArray}!sharedMemory.h@{sharedMemory.h}}
+\doxysubsubsection{\texorpdfstring{getArray()}{getArray()}}
+{\footnotesize\ttfamily void get\+Array (\begin{DoxyParamCaption}\item[{int $\ast$$\ast$}]{array,  }\item[{int}]{start,  }\item[{int}]{size }\end{DoxyParamCaption})}
+
+
+
+Function get\+Array. 
+
+Gets the array from the shared memory.
+
+
+\begin{DoxyParams}{Parameters}
+{\em array} & array \\
+\hline
+{\em start} & start index \\
+\hline
+{\em size} & array size \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{sharedMemory_8h_ac9164dd7fc534a4a456ffe3bd893a52a}\label{sharedMemory_8h_ac9164dd7fc534a4a456ffe3bd893a52a}} 
+\index{sharedMemory.h@{sharedMemory.h}!getFileName@{getFileName}}
+\index{getFileName@{getFileName}!sharedMemory.h@{sharedMemory.h}}
+\doxysubsubsection{\texorpdfstring{getFileName()}{getFileName()}}
+{\footnotesize\ttfamily void get\+File\+Name (\begin{DoxyParamCaption}\item[{char $\ast$$\ast$}]{file }\end{DoxyParamCaption})}
+
+
+
+Function get\+File\+Name. 
+
+Gets the file name from the shared memory.
+
+
+\begin{DoxyParams}{Parameters}
+{\em file} & file name \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{sharedMemory_8h_a5771f627dfb464188c62f346f6b7ee4e}\label{sharedMemory_8h_a5771f627dfb464188c62f346f6b7ee4e}} 
+\index{sharedMemory.h@{sharedMemory.h}!getFullArray@{getFullArray}}
+\index{getFullArray@{getFullArray}!sharedMemory.h@{sharedMemory.h}}
+\doxysubsubsection{\texorpdfstring{getFullArray()}{getFullArray()}}
+{\footnotesize\ttfamily void get\+Full\+Array (\begin{DoxyParamCaption}\item[{int $\ast$$\ast$}]{array }\end{DoxyParamCaption})}
+
+
+
+Function get\+Full\+Array. 
+
+Gets the full array from the shared memory.
+
+
+\begin{DoxyParams}{Parameters}
+{\em array} & full array \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{sharedMemory_8h_a630d04f8f098510c00c6aa747a05388a}\label{sharedMemory_8h_a630d04f8f098510c00c6aa747a05388a}} 
+\index{sharedMemory.h@{sharedMemory.h}!initializeSharedMemory@{initializeSharedMemory}}
+\index{initializeSharedMemory@{initializeSharedMemory}!sharedMemory.h@{sharedMemory.h}}
+\doxysubsubsection{\texorpdfstring{initializeSharedMemory()}{initializeSharedMemory()}}
+{\footnotesize\ttfamily void initialize\+Shared\+Memory (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Function initialize\+Shared\+Memory. 
+
+Initializes the shared memory. \mbox{\Hypertarget{sharedMemory_8h_a840f6d3b8a463d4dd61c837d4206b758}\label{sharedMemory_8h_a840f6d3b8a463d4dd61c837d4206b758}} 
+\index{sharedMemory.h@{sharedMemory.h}!mutex\_lock@{mutex\_lock}}
+\index{mutex\_lock@{mutex\_lock}!sharedMemory.h@{sharedMemory.h}}
+\doxysubsubsection{\texorpdfstring{mutex\_lock()}{mutex\_lock()}}
+{\footnotesize\ttfamily void mutex\+\_\+lock (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Function mutex\+\_\+lock. 
+
+Locks the access to the shared memory. \mbox{\Hypertarget{sharedMemory_8h_ac096e7375b982c41169bbf4645d88846}\label{sharedMemory_8h_ac096e7375b982c41169bbf4645d88846}} 
+\index{sharedMemory.h@{sharedMemory.h}!mutex\_unlock@{mutex\_unlock}}
+\index{mutex\_unlock@{mutex\_unlock}!sharedMemory.h@{sharedMemory.h}}
+\doxysubsubsection{\texorpdfstring{mutex\_unlock()}{mutex\_unlock()}}
+{\footnotesize\ttfamily void mutex\+\_\+unlock (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Function mutex\+\_\+unlock. 
+
+Unlocks the access to the shared memory. \mbox{\Hypertarget{sharedMemory_8h_a551736e0cf14a3ec59d4c92d8ce067d1}\label{sharedMemory_8h_a551736e0cf14a3ec59d4c92d8ce067d1}} 
+\index{sharedMemory.h@{sharedMemory.h}!notFinished@{notFinished}}
+\index{notFinished@{notFinished}!sharedMemory.h@{sharedMemory.h}}
+\doxysubsubsection{\texorpdfstring{notFinished()}{notFinished()}}
+{\footnotesize\ttfamily int not\+Finished (\begin{DoxyParamCaption}\item[{int}]{id }\end{DoxyParamCaption})}
+
+
+
+Function not\+Finished. 
+
+Checks if the worker is not finished.
+
+
+\begin{DoxyParams}{Parameters}
+{\em id} & worker id \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+true if the worker is not finished, false otherwise 
+\end{DoxyReturn}
+\mbox{\Hypertarget{sharedMemory_8h_a75720fc6be3c4429697103d7f2b962f5}\label{sharedMemory_8h_a75720fc6be3c4429697103d7f2b962f5}} 
+\index{sharedMemory.h@{sharedMemory.h}!putArray@{putArray}}
+\index{putArray@{putArray}!sharedMemory.h@{sharedMemory.h}}
+\doxysubsubsection{\texorpdfstring{putArray()}{putArray()}}
+{\footnotesize\ttfamily void put\+Array (\begin{DoxyParamCaption}\item[{int $\ast$}]{array,  }\item[{int}]{start,  }\item[{int}]{size }\end{DoxyParamCaption})}
+
+
+
+Function put\+Array. 
+
+Puts the array in the shared memory.
+
+
+\begin{DoxyParams}{Parameters}
+{\em array} & array \\
+\hline
+{\em start} & start index \\
+\hline
+{\em size} & array size \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{sharedMemory_8h_a92335a4545f87bc5988c7d229ac2f037}\label{sharedMemory_8h_a92335a4545f87bc5988c7d229ac2f037}} 
+\index{sharedMemory.h@{sharedMemory.h}!putFileName@{putFileName}}
+\index{putFileName@{putFileName}!sharedMemory.h@{sharedMemory.h}}
+\doxysubsubsection{\texorpdfstring{putFileName()}{putFileName()}}
+{\footnotesize\ttfamily void put\+File\+Name (\begin{DoxyParamCaption}\item[{char $\ast$}]{file }\end{DoxyParamCaption})}
+
+
+
+Function put\+File\+Name. 
+
+Puts the file name in the shared memory.
+
+
+\begin{DoxyParams}{Parameters}
+{\em file} & file name \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{sharedMemory_8h_a28d9b0caeb17a41766df9a4c378de315}\label{sharedMemory_8h_a28d9b0caeb17a41766df9a4c378de315}} 
+\index{sharedMemory.h@{sharedMemory.h}!requestWork@{requestWork}}
+\index{requestWork@{requestWork}!sharedMemory.h@{sharedMemory.h}}
+\doxysubsubsection{\texorpdfstring{requestWork()}{requestWork()}}
+{\footnotesize\ttfamily void request\+Work (\begin{DoxyParamCaption}\item[{int}]{id,  }\item[{\mbox{\hyperlink{structSubArray}{Sub\+Array}} $\ast$}]{sub\+Array }\end{DoxyParamCaption})}
+
+
+
+Function request\+Work. 
+
+Requests work to the distributor.
+
+
+\begin{DoxyParams}{Parameters}
+{\em id} & worker id \\
+\hline
+{\em sub\+Array} & sub array \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{sharedMemory_8h_ad5ac5f9fc469d745cabbf61244c85d09}\label{sharedMemory_8h_ad5ac5f9fc469d745cabbf61244c85d09}} 
+\index{sharedMemory.h@{sharedMemory.h}!sortCompleted@{sortCompleted}}
+\index{sortCompleted@{sortCompleted}!sharedMemory.h@{sharedMemory.h}}
+\doxysubsubsection{\texorpdfstring{sortCompleted()}{sortCompleted()}}
+{\footnotesize\ttfamily bool sort\+Completed (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Function sort\+Completed. 
+
+Checks if the sort is completed.
+
+\begin{DoxyReturn}{Returns}
+true if the sort is completed, false otherwise 
+\end{DoxyReturn}
+\mbox{\Hypertarget{sharedMemory_8h_a8cc7518025ad62dceb39d08d99864318}\label{sharedMemory_8h_a8cc7518025ad62dceb39d08d99864318}} 
+\index{sharedMemory.h@{sharedMemory.h}!waitForWorkComplete@{waitForWorkComplete}}
+\index{waitForWorkComplete@{waitForWorkComplete}!sharedMemory.h@{sharedMemory.h}}
+\doxysubsubsection{\texorpdfstring{waitForWorkComplete()}{waitForWorkComplete()}}
+{\footnotesize\ttfamily void wait\+For\+Work\+Complete (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Function wait\+For\+Work\+Complete. 
+
+Distributor waits for work completion. \mbox{\Hypertarget{sharedMemory_8h_a4d3f791f1ca139841826f89e41039236}\label{sharedMemory_8h_a4d3f791f1ca139841826f89e41039236}} 
+\index{sharedMemory.h@{sharedMemory.h}!waitForWorkRequest@{waitForWorkRequest}}
+\index{waitForWorkRequest@{waitForWorkRequest}!sharedMemory.h@{sharedMemory.h}}
+\doxysubsubsection{\texorpdfstring{waitForWorkRequest()}{waitForWorkRequest()}}
+{\footnotesize\ttfamily void wait\+For\+Work\+Request (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Function wait\+For\+Work\+Request. 
+
+Distributor waits for work request. 

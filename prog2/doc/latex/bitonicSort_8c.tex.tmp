@@ -1,0 +1,122 @@
+\hypertarget{bitonicSort_8c}{}\doxysection{bitonic\+Sort.\+c File Reference}
+\label{bitonicSort_8c}\index{bitonicSort.c@{bitonicSort.c}}
+
+
+Bitonic Sort module.  
+
+
+{\ttfamily \#include $<$stdio.\+h$>$}\newline
+{\ttfamily \#include $<$stdlib.\+h$>$}\newline
+{\ttfamily \#include \char`\"{}bitonic\+Sort.\+h\char`\"{}}\newline
+Include dependency graph for bitonic\+Sort.\+c\+:
+% FIG 0
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{bitonicSort_8c_a80cdc803e4a654d1d74a25435600a9c7}{swap}} (int $\ast$a, int $\ast$b, int \mbox{\hyperlink{main_8c_aaf9f88666b445baa60f8857b6559a1d9}{sort\+Type}})
+\begin{DoxyCompactList}\small\item\em Function swap. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{bitonicSort_8c_aa7a53e101719e2cf6c5c4bb25cb5deb8}{merge}} (int $\ast$array, int size, int \mbox{\hyperlink{main_8c_aaf9f88666b445baa60f8857b6559a1d9}{sort\+Type}})
+\begin{DoxyCompactList}\small\item\em Function merge. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{bitonicSort_8c_a459f31ea86fb220cc5016f90baf9d457}{sort}} (int $\ast$array, int size, int \mbox{\hyperlink{main_8c_aaf9f88666b445baa60f8857b6559a1d9}{sort\+Type}})
+\begin{DoxyCompactList}\small\item\em Function sort. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{bitonicSort_8c_a6e3cdfc23e0c0c14edd6196a298762c1}{validate\+Array}} (int $\ast$array, int size, int \mbox{\hyperlink{main_8c_aaf9f88666b445baa60f8857b6559a1d9}{sort\+Type}})
+\begin{DoxyCompactList}\small\item\em Function validate\+Array. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Bitonic Sort module. 
+
+This module provides the necessary implementations to sort an array using the Bitonic Sort algorithm.
+
+\begin{DoxyAuthor}{Author}
+Guilherme Antunes -\/ 103600 
+
+Pedro Rasinhas -\/ 103541 
+\end{DoxyAuthor}
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{bitonicSort_8c_aa7a53e101719e2cf6c5c4bb25cb5deb8}\label{bitonicSort_8c_aa7a53e101719e2cf6c5c4bb25cb5deb8}} 
+\index{bitonicSort.c@{bitonicSort.c}!merge@{merge}}
+\index{merge@{merge}!bitonicSort.c@{bitonicSort.c}}
+\doxysubsubsection{\texorpdfstring{merge()}{merge()}}
+{\footnotesize\ttfamily void merge (\begin{DoxyParamCaption}\item[{int $\ast$}]{array,  }\item[{int}]{size,  }\item[{int}]{sort\+Type }\end{DoxyParamCaption})}
+
+
+
+Function merge. 
+
+Its role is to merge two arrays.
+
+
+\begin{DoxyParams}{Parameters}
+{\em array} & pointer to the array \\
+\hline
+{\em size} & array size \\
+\hline
+{\em sort\+Type} & sort type \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{bitonicSort_8c_a459f31ea86fb220cc5016f90baf9d457}\label{bitonicSort_8c_a459f31ea86fb220cc5016f90baf9d457}} 
+\index{bitonicSort.c@{bitonicSort.c}!sort@{sort}}
+\index{sort@{sort}!bitonicSort.c@{bitonicSort.c}}
+\doxysubsubsection{\texorpdfstring{sort()}{sort()}}
+{\footnotesize\ttfamily void sort (\begin{DoxyParamCaption}\item[{int $\ast$}]{array,  }\item[{int}]{size,  }\item[{int}]{sort\+Type }\end{DoxyParamCaption})}
+
+
+
+Function sort. 
+
+Its role is to sort an array.
+
+
+\begin{DoxyParams}{Parameters}
+{\em array} & pointer to the array \\
+\hline
+{\em size} & array size \\
+\hline
+{\em sort\+Type} & sort type \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{bitonicSort_8c_a80cdc803e4a654d1d74a25435600a9c7}\label{bitonicSort_8c_a80cdc803e4a654d1d74a25435600a9c7}} 
+\index{bitonicSort.c@{bitonicSort.c}!swap@{swap}}
+\index{swap@{swap}!bitonicSort.c@{bitonicSort.c}}
+\doxysubsubsection{\texorpdfstring{swap()}{swap()}}
+{\footnotesize\ttfamily void swap (\begin{DoxyParamCaption}\item[{int $\ast$}]{a,  }\item[{int $\ast$}]{b,  }\item[{int}]{sort\+Type }\end{DoxyParamCaption})}
+
+
+
+Function swap. 
+
+Its role is to swap two elements of an array.
+
+
+\begin{DoxyParams}{Parameters}
+{\em a} & pointer to the first element \\
+\hline
+{\em b} & pointer to the second element \\
+\hline
+{\em sort\+Type} & sort type \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{bitonicSort_8c_a6e3cdfc23e0c0c14edd6196a298762c1}\label{bitonicSort_8c_a6e3cdfc23e0c0c14edd6196a298762c1}} 
+\index{bitonicSort.c@{bitonicSort.c}!validateArray@{validateArray}}
+\index{validateArray@{validateArray}!bitonicSort.c@{bitonicSort.c}}
+\doxysubsubsection{\texorpdfstring{validateArray()}{validateArray()}}
+{\footnotesize\ttfamily void validate\+Array (\begin{DoxyParamCaption}\item[{int $\ast$}]{array,  }\item[{int}]{size,  }\item[{int}]{sort\+Type }\end{DoxyParamCaption})}
+
+
+
+Function validate\+Array. 
+
+Its role is to validate an array.
+
+
+\begin{DoxyParams}{Parameters}
+{\em array} & pointer to the array \\
+\hline
+{\em size} & array size \\
+\hline
+{\em sort\+Type} & sort type \\
+\hline
+\end{DoxyParams}

@@ -1,3 +1,14 @@
+/**
+ * \file bitonicSort.c
+ * 
+ * \brief Bitonic Sort module.
+ * 
+ * This module provides the necessary implementations to sort an array using the Bitonic Sort algorithm.
+ * 
+ * \author Guilherme Antunes - 103600
+ * \author Pedro Rasinhas - 103541
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -78,7 +89,6 @@ void sort(int *array, int size, int sortType)
  *  \param size array size
  *  \param sortType sort type
  */
-
 void validateArray(int *array, int size, int sortType)
 {
     int j;

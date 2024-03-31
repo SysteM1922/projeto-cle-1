@@ -1,3 +1,14 @@
+/**
+ * \file main.c
+ * 
+ * \brief Main module.
+ * 
+ * This module provides the program's logic.
+ * 
+ * \author Guilherme Antunes - 103600
+ * \author Pedro Rasinhas - 103541
+*/
+
 #include <stdio.h>
 #include <pthread.h>
 #include <stdlib.h>
