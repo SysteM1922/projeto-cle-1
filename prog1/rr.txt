@@ -1,3 +1,0 @@
-gcc -Wall -o3 workerThreads.c sharedRegion.c main.c -o run -lpthread -lm
-
-./run -t 4 -s 8192 ../dataSet1/text0.txt ../dataSet1/text1.txt ../dataSet1/text2.txt ../dataSet1/text3.txt ../dataSet1/text4.txt
