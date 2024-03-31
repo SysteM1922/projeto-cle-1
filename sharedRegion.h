@@ -8,8 +8,7 @@ typedef struct {
     char* filename;           
     int fileSize;             
     int wordsCount;           
-    int wordsWithConsonants; 
-    int isFinished;           
+    int wordsWithConsonants;    
 } File;
 
 typedef struct {
@@ -49,6 +48,5 @@ Chunk* dequeue(Queue* q);
 
 void updateFileStats(char* filename, int numWords, int numWordsWithConsonants, pthread_t threadID);
 
-void aggregateFileStats(int numFiles);
 
-#endif // SHARED_REGION_H
+#endif 

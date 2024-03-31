@@ -16,10 +16,9 @@ void initFileStructures(char **filenames, int numFiles)
     for (int i = 0; i < numFiles; i++)
     {
         fileStats[i].filename = filenames[i];
-        fileStats[i].fileSize = 0; 
+        fileStats[i].fileSize = 0;
         fileStats[i].wordsCount = 0;
         fileStats[i].wordsWithConsonants = 0;
-        fileStats[i].isFinished = 0;    
     }
 }
 
@@ -28,7 +27,7 @@ void initQueue(Queue *q)
 {
     q->front = NULL;
     q->rear = NULL;
-    
+
     pthread_mutex_init(&q->mutex, NULL);
     pthread_mutex_init(&queue_mutex, NULL);
     pthread_mutex_init(&fileStatsMutex, NULL);
@@ -65,8 +64,8 @@ void enqueueChunks(Queue *q, char **filenames, int numFiles, int threadSize)
                 Chunk *chunk = (Chunk *)malloc(sizeof(Chunk));
                 chunk->filename = strdup(filenames[i]);
                 chunk->start = start;
-                chunk->wordsCount = 0; 
-                chunk->wordsWithConsonants = 0; 
+                chunk->wordsCount = 0;
+                chunk->wordsWithConsonants = 0;
                 // before enqueuing the chunk, check if the chunk is "perfect" (ends outside of a word) -> if not, adjust the end
                 FILE *file = fopen(filenames[i], "rb");
                 if (file == NULL)
@@ -109,17 +108,21 @@ void enqueueChunks(Queue *q, char **filenames, int numFiles, int threadSize)
         perror("Error unlocking mutex");
         exit(EXIT_FAILURE);
     }
-
 }
 
 // Enqueue a chunk into the FIFO queue
 void enqueue(Queue *q, Chunk *chunk)
 {
+
+    if (pthread_mutex_lock(&q->mutex) != 0)
+    {
+        perror("Error locking mutex");
+        exit(EXIT_FAILURE);
+    }
+
     Node *newNode = (Node *)malloc(sizeof(Node));
     newNode->chunk = chunk;
     newNode->next = NULL;
-
-    pthread_mutex_lock(&q->mutex);
 
     if (q->rear == NULL)
     {
@@ -132,17 +135,29 @@ void enqueue(Queue *q, Chunk *chunk)
         q->rear = newNode;
     }
 
-    pthread_mutex_unlock(&q->mutex);
+    if (pthread_mutex_unlock(&q->mutex) != 0)
+    {
+        perror("Error unlocking mutex");
+        exit(EXIT_FAILURE);
+    }
 }
 
 // Dequeue a chunk from the FIFO queue
 Chunk *dequeue(Queue *q)
 {
-    pthread_mutex_lock(&q->mutex);
+    if (pthread_mutex_lock(&q->mutex) != 0)
+    {
+        perror("Error locking mutex");
+        exit(EXIT_FAILURE);
+    }
 
     if (q->front == NULL)
     {
-        pthread_mutex_unlock(&q->mutex);
+        if (pthread_mutex_unlock(&q->mutex) != 0)
+        {
+            perror("Error unlocking mutex");
+            exit(EXIT_FAILURE);
+        }
         return NULL;
     }
     else
@@ -157,15 +172,23 @@ Chunk *dequeue(Queue *q)
             q->rear = NULL;
         }
 
-        pthread_mutex_unlock(&q->mutex);
+        if (pthread_mutex_unlock(&q->mutex) != 0)
+        {
+            perror("Error unlocking mutex");
+            exit(EXIT_FAILURE);
+        }
         return chunk;
     }
 }
 
 // Update the file statistics
-void updateFileStats(char* filename, int numWords, int numWordsWithConsonants, pthread_t threadID)
-{   
-    pthread_mutex_lock(&fileStatsMutex);
+void updateFileStats(char *filename, int numWords, int numWordsWithConsonants, pthread_t threadID)
+{
+    if (pthread_mutex_lock(&fileStatsMutex) != 0)
+    {
+        perror("Error locking mutex");
+        exit(EXIT_FAILURE);
+    }
     for (int i = 0; i < MAX_FILES; i++)
     {
         if (strcmp(fileStats[i].filename, filename) == 0)
@@ -176,18 +199,9 @@ void updateFileStats(char* filename, int numWords, int numWordsWithConsonants, p
             break;
         }
     }
-    pthread_mutex_unlock(&fileStatsMutex);
-}
-
-
-/* // Aggregate file statistics
-void aggregateResults(Chunk* chunks, int numChunks) {
-    pthread_mutex_lock(&fileStatsMutex);
-    for (int i = 0; i < numChunks; i++) {
-        fileStats.wordsCount += chunks[i].numWords;
-        fileStats.wordsWithConsonants += chunks[i].numWordsWithConsonants;
+    if (pthread_mutex_unlock(&fileStatsMutex) != 0)
+    {
+        perror("Error unlocking mutex");
+        exit(EXIT_FAILURE);
     }
-    pthread_mutexFile fileStats[MAX_FILES];
-pthread_mutex_t fileStatsMutex = PTHREAD_MUTEX_INITIALIZER;
-pthread_mutex_t queue_mutex = PTHREAD_MUTEX_INITIALIZER;_unlock(&fileStatsMutex);
-} */
+}
