@@ -236,9 +236,9 @@ void processChunk(FILE *file, Chunk *chunk, pthread_t threadID)
         {
             printf("Reading character: %lc at position: %ld\n", c, ftell(file));
         }
-
+        printf("out of words\n");
         // wait 30 seconds
-        sleep(30);
+        // sleep(30);
     }
 
     // Update the corresponding File structure for the file being processed
