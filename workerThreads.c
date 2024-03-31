@@ -38,10 +38,18 @@ void extractLetter(wchar_t *letter)
 
 void createThreads(int numThreads, Queue *fifo, pthread_t *threads, ThreadData *threadData)
 {
-    for (int i = 0; i < numThreads; i++) {
-        threadData[i].fifo = fifo; // Directly assign the pointer to the Queue structure
+    for (int i = 0; i < numThreads; i++)
+    {
+        threadData[i].fifo = fifo;               // Directly assign the pointer to the Queue structure
         threadData[i].fileStats = &fileStats[0]; // Assuming fileStats is an array of File structures, assign the address of the first element
-        pthread_create(&threads[i], NULL, threadStartRoutine, (void *)&threadData[i]);
+
+        if (pthread_create(&threads[i], NULL, threadStartRoutine, &threadData[i]) != 0)
+        {
+            perror("Error creating thread");
+            exit(EXIT_FAILURE);
+        }
+
+        printf("Thread %lu has been started\n", threads[i]);
     }
 }
 
@@ -87,21 +95,17 @@ void *threadStartRoutine(void *arg)
 
         // Process the chunk
         // actually count the words and words with consonants
-        processChunk(chunk, pthread_self());
+        processChunk(file, chunk, pthread_self());
     }
+
+    pthread_exit((void *)pthread_self());
+
     return NULL;
 }
 
 // Function to process a chunk
-void processChunk(Chunk *chunk, pthread_t threadID)
+void processChunk(FILE *file, Chunk *chunk, pthread_t threadID)
 {
-    FILE *file = fopen(chunk->filename, "rb");
-    if (file == NULL)
-    {
-        perror("Error opening file");
-        return;
-    }
-
     // Seek to the start of the chunk
     fseek(file, chunk->start, SEEK_SET);
 
@@ -112,7 +116,7 @@ void processChunk(Chunk *chunk, pthread_t threadID)
     int word_len = 0;
     int found = 0;
     wchar_t c;
-    while ((c = fgetwc(file)) != WEOF)
+    while ((c = fgetwc(file)) != WEOF && ftell(file) <= chunk->end) // Ensure to stop at the end of the chunk
     {
         if (isLetter(c))
         {
@@ -159,16 +163,15 @@ void processChunk(Chunk *chunk, pthread_t threadID)
     chunk->wordsCount = wordCount;
     chunk->wordsWithConsonants = matchWords;
 
-    fclose(file);
-
     // Update the corresponding File structure for the file being processed
-    for (int i = 0; i < MAX_FILES; i++) {
-        if (strcmp(fileStats[i].filename, chunk->filename) == 0) {
+    for (int i = 0; i < MAX_FILES; i++)
+    {
+        if (strcmp(fileStats[i].filename, chunk->filename) == 0)
+        {
             printf("Thread %lu counted %d words for chunk for file: %s, start: %d, end: %d\n", threadID, wordCount, chunk->filename, chunk->start, chunk->end);
             printf("Thread %lu counted %d words with consonants for chunk for file: %s, start: %d, end: %d\n", threadID, matchWords, chunk->filename, chunk->start, chunk->end);
             updateFileStats(chunk->filename, wordCount, matchWords, threadID);
             break;
         }
     }
-
 }

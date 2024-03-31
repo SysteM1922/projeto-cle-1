@@ -79,8 +79,6 @@ int main(int argc, char* argv[]) {
     // Join threads and perform cleanup
     joinThreads(numThreads, threads);   // Wait for all threads to finish
 
-    // aggregateResults(numFiles); // Aggregate results from all threads
-
     // Print statistics for each file
     printf("\n-----------------------------File Statistics-----------------------------\n");
     for (int i = 0; i < numFiles; i++) {
