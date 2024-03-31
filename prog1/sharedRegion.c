@@ -116,11 +116,7 @@ void enqueueChunks(Queue *q, char **filenames, int numFiles, int threadSize)
                 {
                     if ((iswalnum(c) || c == L'_' || c == L'’' || c == L'‘' || c == L'\''))
                     {
-                        // If the character is an apostrophe, do not adjust the end position back further
-                        if (c != L'\'' && c != L'’' && c != L'‘')
-                        {
-                            end--; // Move the end position back
-                        }
+                        end++;
                     }
                     else
                     {
