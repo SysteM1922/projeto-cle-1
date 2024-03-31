@@ -124,6 +124,10 @@ void enqueueChunks(Queue *q, char **filenames, int numFiles, int threadSize)
                             break;
                         }
                     }
+                } 
+                else if (end == fileSize)
+                {
+                    end--;
                 }
 
                 chunk->end = end;
