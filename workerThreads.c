@@ -41,7 +41,14 @@ void createThreads(int numThreads, Queue *fifo, pthread_t *threads, ThreadData *
     for (int i = 0; i < numThreads; i++) {
         threadData[i].fifo = fifo; // Directly assign the pointer to the Queue structure
         threadData[i].fileStats = &fileStats[0]; // Assuming fileStats is an array of File structures, assign the address of the first element
-        pthread_create(&threads[i], NULL, threadStartRoutine, (void *)&threadData[i]);
+        
+        if (pthread_create(&threads[i], NULL, threadStartRoutine, &threadData[i]) != 0) {
+            perror("Error creating thread");
+            exit(EXIT_FAILURE);
+        }
+
+        printf("Thread %lu has been started\n", threads[i]);
+
     }
 }
 
@@ -89,6 +96,11 @@ void *threadStartRoutine(void *arg)
         // actually count the words and words with consonants
         processChunk(chunk, pthread_self());
     }
+
+    // Thread is finished -> exit the thread with the corresponding thread ID
+    pthread_exit((void *)pthread_self());
+
+
     return NULL;
 }
 
