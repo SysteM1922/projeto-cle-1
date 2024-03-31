@@ -8,8 +8,27 @@
 #include <wchar.h>
 
 File fileStats[MAX_FILES];
-pthread_mutex_t fileStatsMutex = PTHREAD_MUTEX_INITIALIZER;
-pthread_mutex_t queue_mutex = PTHREAD_MUTEX_INITIALIZER;
+static pthread_once_t init = PTHREAD_ONCE_INIT;
+static pthread_mutex_t fileStatsMutex = PTHREAD_MUTEX_INITIALIZER;
+static pthread_mutex_t queue_mutex = PTHREAD_MUTEX_INITIALIZER;
+
+void mutex_lock()
+{
+    if (pthread_mutex_lock(&queue_mutex) != 0)
+    {
+        perror("Error locking mutex");
+        exit(EXIT_FAILURE);
+    }
+}
+
+void mutex_unlock()
+{
+    if (pthread_mutex_unlock(&queue_mutex) != 0)
+    {
+        perror("Error unlocking mutex");
+        exit(EXIT_FAILURE);
+    }
+}
 
 void initFileStructures(char **filenames, int numFiles)
 {
@@ -36,11 +55,7 @@ void initQueue(Queue *q)
 void enqueueChunks(Queue *q, char **filenames, int numFiles, int threadSize)
 {
     // Lock the mutex before accessing the queue
-    if (pthread_mutex_lock(&queue_mutex) != 0)
-    {
-        perror("Error locking mutex");
-        exit(EXIT_FAILURE);
-    }
+    mutex_lock();
 
     for (int i = 0; i < numFiles; i++)
     {
@@ -102,23 +117,15 @@ void enqueueChunks(Queue *q, char **filenames, int numFiles, int threadSize)
             exit(EXIT_FAILURE);
         }
     }
+
     // Unlock the mutex after accessing the queue
-    if (pthread_mutex_unlock(&queue_mutex) != 0)
-    {
-        perror("Error unlocking mutex");
-        exit(EXIT_FAILURE);
-    }
+    mutex_unlock();
 }
 
 // Enqueue a chunk into the FIFO queue
 void enqueue(Queue *q, Chunk *chunk)
 {
-
-    if (pthread_mutex_lock(&q->mutex) != 0)
-    {
-        perror("Error locking mutex");
-        exit(EXIT_FAILURE);
-    }
+    mutex_lock();
 
     Node *newNode = (Node *)malloc(sizeof(Node));
     newNode->chunk = chunk;
@@ -135,30 +142,17 @@ void enqueue(Queue *q, Chunk *chunk)
         q->rear = newNode;
     }
 
-    if (pthread_mutex_unlock(&q->mutex) != 0)
-    {
-        perror("Error unlocking mutex");
-        exit(EXIT_FAILURE);
-    }
+    mutex_unlock();
 }
 
 // Dequeue a chunk from the FIFO queue
-Chunk *dequeue(Queue *q)
+void dequeue(Queue *q, Chunk **retChunk)
 {
-    if (pthread_mutex_lock(&q->mutex) != 0)
-    {
-        perror("Error locking mutex");
-        exit(EXIT_FAILURE);
-    }
+    mutex_lock();
 
     if (q->front == NULL)
     {
-        if (pthread_mutex_unlock(&q->mutex) != 0)
-        {
-            perror("Error unlocking mutex");
-            exit(EXIT_FAILURE);
-        }
-        return NULL;
+        *retChunk = NULL;
     }
     else
     {
@@ -171,24 +165,16 @@ Chunk *dequeue(Queue *q)
         {
             q->rear = NULL;
         }
-
-        if (pthread_mutex_unlock(&q->mutex) != 0)
-        {
-            perror("Error unlocking mutex");
-            exit(EXIT_FAILURE);
-        }
-        return chunk;
+        *retChunk = chunk;
     }
+    mutex_unlock();
 }
 
 // Update the file statistics
 void updateFileStats(char *filename, int numWords, int numWordsWithConsonants, pthread_t threadID)
 {
-    if (pthread_mutex_lock(&fileStatsMutex) != 0)
-    {
-        perror("Error locking mutex");
-        exit(EXIT_FAILURE);
-    }
+    mutex_lock();
+
     for (int i = 0; i < MAX_FILES; i++)
     {
         if (strcmp(fileStats[i].filename, filename) == 0)
@@ -199,9 +185,6 @@ void updateFileStats(char *filename, int numWords, int numWordsWithConsonants, p
             break;
         }
     }
-    if (pthread_mutex_unlock(&fileStatsMutex) != 0)
-    {
-        perror("Error unlocking mutex");
-        exit(EXIT_FAILURE);
-    }
+    
+    mutex_unlock();
 }
