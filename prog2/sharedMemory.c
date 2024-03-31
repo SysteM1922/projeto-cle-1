@@ -7,44 +7,64 @@
 
 #include "structs.h"
 
+/** \brief file name */
 char *fileName;
 
+/** \brief access control */
 static pthread_mutex_t accessCR = PTHREAD_MUTEX_INITIALIZER;
 
+/** \brief initialization control */
 static pthread_once_t init = PTHREAD_ONCE_INIT;
 
+/** \brief work request condition */
 static pthread_cond_t workRequest = PTHREAD_COND_INITIALIZER;
 
+/** \brief work completed condition */
 static pthread_cond_t workCompleted = PTHREAD_COND_INITIALIZER;
 
+/** \brief work assigned condition */
 static pthread_cond_t workAssigned = PTHREAD_COND_INITIALIZER;
 
+/** \brief sub array size */
 static int subArraySize;
 
+/** \brief waiting work flag */
 static bool waitingWork;
 
+/** \brief waiting complete flag */
 static bool waitingComplete;
 
+/** \brief completed work flags */
 static bool *completedWork;
 
-static int statusMon;
-
+/** \brief not finished workers flags */
 static bool *notFinishedWorkers;
 
+/** \brief requesting work flags */
 static bool *requestingWork;
 
+/** \brief assigned work flags */
 static bool *assignedWork;
 
+/** \brief full array */
 static int *fullArray;
 
+/** \brief status monitor */
+static int statusMon;
+
+/** \brief status distributor */
 extern int statusDis;
 
+/** \brief status workers */
 extern int *statusWor;
 
+/** \brief number of threads */
 extern int nThreads;
 
+/** \brief workers work */
 static SubArray *workersWork;
 
+/** \brief sub arrays */
 static SubArray *subArrays;
 
 void mutex_lock()

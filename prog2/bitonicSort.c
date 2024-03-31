@@ -3,6 +3,16 @@
 
 #include "bitonicSort.h"
 
+/**
+ *  \brief Function swap.
+ *
+ *  Its role is to swap two elements of an array.
+ *
+ *  \param a pointer to the first element
+ *  \param b pointer to the second element
+ *  \param sortType sort type
+ */
+
 void swap(int *a, int *b, int sortType)
 {
     if (sortType == (*a > *b))
@@ -12,6 +22,16 @@ void swap(int *a, int *b, int sortType)
         *b = temp;
     }
 }
+
+/**
+ *  \brief Function merge.
+ *
+ *  Its role is to merge two arrays.
+ *
+ *  \param array pointer to the array
+ *  \param size array size
+ *  \param sortType sort type
+ */
 
 void merge(int *array, int size, int sortType)
 {
@@ -28,6 +48,16 @@ void merge(int *array, int size, int sortType)
     }
 }
 
+/**
+ *  \brief Function sort.
+ *
+ *  Its role is to sort an array.
+ *
+ *  \param array pointer to the array
+ *  \param size array size
+ *  \param sortType sort type
+ */
+
 void sort(int *array, int size, int sortType)
 {
     if (size > 1)
@@ -38,6 +68,16 @@ void sort(int *array, int size, int sortType)
         merge(array, size, sortType);
     }
 }
+
+/**
+ *  \brief Function validateArray.
+ *
+ *  Its role is to validate an array.
+ *
+ *  \param array pointer to the array
+ *  \param size array size
+ *  \param sortType sort type
+ */
 
 void validateArray(int *array, int size, int sortType)
 {
