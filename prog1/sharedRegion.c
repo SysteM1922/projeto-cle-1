@@ -1,14 +1,13 @@
 /**
  * \file sharedRegion.c
- * 
+ *
  * @brief Functions for shared region management
- * 
+ *
  * This file contains functions for initializing and manipulating a FIFO queue, as well as enqueueing and dequeuing chunks of data, and also updating file statistics.
  *
  * \author Guilherme Antunes - 103600
  * \author Pedro Rasinhas - 103541
  */
-
 
 #include "sharedRegion.h"
 #include <stdio.h>
@@ -19,15 +18,15 @@
 #include <wctype.h>
 #include <wchar.h>
 
-File fileStats[MAX_FILES]; /**< Array to store statistics for each file */
+File fileStats[MAX_FILES];                                  /**< Array to store statistics for each file */
 pthread_mutex_t fileStatsMutex = PTHREAD_MUTEX_INITIALIZER; /**< Mutex for file statistics */
-pthread_mutex_t queue_mutex = PTHREAD_MUTEX_INITIALIZER; /**< Mutex for queue */
+pthread_mutex_t queue_mutex = PTHREAD_MUTEX_INITIALIZER;    /**< Mutex for queue */
 
 /**
  * @brief Initializes file structures.
- * 
+ *
  * Initializes the file structures for each file in the given array of filenames.
- * 
+ *
  * @param filenames Array of filenames
  * @param numFiles Number of filenames in the array
  */
@@ -44,9 +43,9 @@ void initFileStructures(char **filenames, int numFiles)
 
 /**
  * @brief Initializes a FIFO queue.
- * 
+ *
  * Initializes the given FIFO queue with default values.
- * 
+ *
  * @param q Pointer to the FIFO queue
  */
 void initQueue(Queue *q)
@@ -61,9 +60,9 @@ void initQueue(Queue *q)
 
 /**
  * @brief Enqueues chunks into the FIFO queue.
- * 
+ *
  * Enqueues chunks of data into the FIFO queue for processing by worker threads, making sure that the chunks dont end in the middle of a word.
- * 
+ *
  * @param q Pointer to the FIFO queue
  * @param filenames Array of filenames
  * @param numFiles Number of filenames in the array
@@ -110,19 +109,23 @@ void enqueueChunks(Queue *q, char **filenames, int numFiles, int threadSize)
                 }
 
                 // Adjust the end position to ensure it does not end in the middle of a word
-                fseek(file, end, SEEK_SET);
-                wchar_t c;
-                while ((c = fgetwc(file)) != WEOF)
+                if (end < fileSize)
                 {
-                    if ((iswalnum(c) || c == L'_' || c == L'’' || c == L'‘' || c == L'\''))
+                    fseek(file, end, SEEK_SET);
+                    wchar_t c;
+                    while ((c = fgetwc(file)) != WEOF)
                     {
-                        end++;
-                    }
-                    else
-                    {
-                        break;
+                        if ((iswalnum(c) || c == L'_' || c == L'’' || c == L'‘' || c == L'\''))
+                        {
+                            end++;
+                        }
+                        else
+                        {
+                            break;
+                        }
                     }
                 }
+
                 chunk->end = end;
                 enqueue(q, chunk);
                 start = end + 1;
@@ -145,9 +148,9 @@ void enqueueChunks(Queue *q, char **filenames, int numFiles, int threadSize)
 
 /**
  * @brief Enqueues a chunk into the FIFO queue.
- * 
+ *
  * Enqueues the given chunk into the FIFO queue.
- * 
+ *
  * @param q Pointer to the FIFO queue
  * @param chunk Pointer to the chunk to enqueue
  */
@@ -184,9 +187,9 @@ void enqueue(Queue *q, Chunk *chunk)
 
 /**
  * @brief Dequeues a chunk from the FIFO queue.
- * 
+ *
  * Dequeues a chunk from the FIFO queue and returns a pointer to it.
- * 
+ *
  * @param q Pointer to the FIFO queue
  * @return Pointer to the dequeued chunk
  */
@@ -232,9 +235,9 @@ Chunk *dequeue(Queue *q, pthread_t threadID)
 
 /**
  * @brief Update the file statistics.
- * 
+ *
  * Update the statistics for the specified file with the given word counts.
- * 
+ *
  * @param filename Name of the file
  * @param numWords Number of words processed
  * @param numWordsWithConsonants Number of words with consonants processed
