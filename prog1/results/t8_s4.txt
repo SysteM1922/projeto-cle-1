@@ -1,0 +1,22 @@
+-----------------------------File Statistics-----------------------------
+File: ../dataSet1/text0.txt
+Total number of words: 17
+Total number of words with at least two instances of the same consonant: 2
+
+File: ../dataSet1/text1.txt
+Total number of words: 1185
+Total number of words with at least two instances of the same consonant: 207
+
+File: ../dataSet1/text2.txt
+Total number of words: 10360
+Total number of words with at least two instances of the same consonant: 1873
+
+File: ../dataSet1/text3.txt
+Total number of words: 3372
+Total number of words with at least two instances of the same consonant: 508
+
+File: ../dataSet1/text4.txt
+Total number of words: 9918
+Total number of words with at least two instances of the same consonant: 1322
+
+Elapsed Time: 0.153942s

@@ -1,0 +1,199 @@
+\hypertarget{sharedRegion_8c}{}\doxysection{shared\+Region.\+c File Reference}
+\label{sharedRegion_8c}\index{sharedRegion.c@{sharedRegion.c}}
+
+
+Functions for shared region management.  
+
+
+{\ttfamily \#include \char`\"{}shared\+Region.\+h\char`\"{}}\newline
+{\ttfamily \#include $<$stdio.\+h$>$}\newline
+{\ttfamily \#include $<$stdlib.\+h$>$}\newline
+{\ttfamily \#include $<$unistd.\+h$>$}\newline
+{\ttfamily \#include $<$sys/stat.\+h$>$}\newline
+{\ttfamily \#include $<$string.\+h$>$}\newline
+{\ttfamily \#include $<$wctype.\+h$>$}\newline
+{\ttfamily \#include $<$wchar.\+h$>$}\newline
+Include dependency graph for shared\+Region.\+c\+:
+% FIG 0
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{sharedRegion_8c_ad4f921aefa6969bbd0421e0cc17c4ce0}{init\+File\+Structures}} (char $\ast$$\ast$filenames, int num\+Files)
+\begin{DoxyCompactList}\small\item\em Initializes file structures. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{sharedRegion_8c_ad39e3e862333b65bf911c0ad9f1b3b50}{init\+Queue}} (\mbox{\hyperlink{structQueue}{Queue}} $\ast$q)
+\begin{DoxyCompactList}\small\item\em Initializes a FIFO queue. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{sharedRegion_8c_a261f1cf15a7f34043115fb062a9c77be}{enqueue\+Chunks}} (\mbox{\hyperlink{structQueue}{Queue}} $\ast$q, char $\ast$$\ast$filenames, int num\+Files, int thread\+Size)
+\begin{DoxyCompactList}\small\item\em Enqueues chunks into the FIFO queue. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{sharedRegion_8c_a7e13acc611b823d527f9458e0f649552}{enqueue}} (\mbox{\hyperlink{structQueue}{Queue}} $\ast$q, \mbox{\hyperlink{structChunk}{Chunk}} $\ast$chunk)
+\begin{DoxyCompactList}\small\item\em Enqueues a chunk into the FIFO queue. \end{DoxyCompactList}\item 
+\mbox{\hyperlink{structChunk}{Chunk}} $\ast$ \mbox{\hyperlink{sharedRegion_8c_a64e35f749ec4acf14120ba783e301f44}{dequeue}} (\mbox{\hyperlink{structQueue}{Queue}} $\ast$q, pthread\+\_\+t thread\+ID)
+\begin{DoxyCompactList}\small\item\em Dequeues a chunk from the FIFO queue. \end{DoxyCompactList}\item 
+void \mbox{\hyperlink{sharedRegion_8c_a86d06915d90d46e1a0ffe08e3cb75437}{update\+File\+Stats}} (char $\ast$filename, int num\+Words, int num\+Words\+With\+Consonants, pthread\+\_\+t thread\+ID)
+\begin{DoxyCompactList}\small\item\em Update the file statistics. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{structFile}{File}} \mbox{\hyperlink{sharedRegion_8c_ae315cadb0a24c08ece161978cf1cf409}{file\+Stats}} \mbox{[}MAX\+\_\+\+FILES\mbox{]}
+\item 
+pthread\+\_\+mutex\+\_\+t \mbox{\hyperlink{sharedRegion_8c_a8d896588118fcd016242d0c31b802da0}{file\+Stats\+Mutex}} = PTHREAD\+\_\+\+MUTEX\+\_\+\+INITIALIZER
+\item 
+pthread\+\_\+mutex\+\_\+t \mbox{\hyperlink{sharedRegion_8c_acc4be9200c8ec4a2152e10a7c33b3704}{queue\+\_\+mutex}} = PTHREAD\+\_\+\+MUTEX\+\_\+\+INITIALIZER
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Functions for shared region management. 
+
+This file contains functions for initializing and manipulating a FIFO queue, as well as enqueueing and dequeuing chunks of data, and also updating file statistics.
+
+\begin{DoxyAuthor}{Author}
+\mbox{[}Your Name\mbox{]} 
+
+\mbox{[}Your Student ID\mbox{]} 
+\end{DoxyAuthor}
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{sharedRegion_8c_a64e35f749ec4acf14120ba783e301f44}\label{sharedRegion_8c_a64e35f749ec4acf14120ba783e301f44}} 
+\index{sharedRegion.c@{sharedRegion.c}!dequeue@{dequeue}}
+\index{dequeue@{dequeue}!sharedRegion.c@{sharedRegion.c}}
+\doxysubsubsection{\texorpdfstring{dequeue()}{dequeue()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structChunk}{Chunk}}$\ast$ dequeue (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structQueue}{Queue}} $\ast$}]{q,  }\item[{pthread\+\_\+t}]{thread\+ID }\end{DoxyParamCaption})}
+
+
+
+Dequeues a chunk from the FIFO queue. 
+
+Dequeues a chunk from the FIFO queue and returns a pointer to it.
+
+
+\begin{DoxyParams}{Parameters}
+{\em q} & Pointer to the FIFO queue \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Pointer to the dequeued chunk 
+\end{DoxyReturn}
+\mbox{\Hypertarget{sharedRegion_8c_a7e13acc611b823d527f9458e0f649552}\label{sharedRegion_8c_a7e13acc611b823d527f9458e0f649552}} 
+\index{sharedRegion.c@{sharedRegion.c}!enqueue@{enqueue}}
+\index{enqueue@{enqueue}!sharedRegion.c@{sharedRegion.c}}
+\doxysubsubsection{\texorpdfstring{enqueue()}{enqueue()}}
+{\footnotesize\ttfamily void enqueue (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structQueue}{Queue}} $\ast$}]{q,  }\item[{\mbox{\hyperlink{structChunk}{Chunk}} $\ast$}]{chunk }\end{DoxyParamCaption})}
+
+
+
+Enqueues a chunk into the FIFO queue. 
+
+Enqueues the given chunk into the FIFO queue.
+
+
+\begin{DoxyParams}{Parameters}
+{\em q} & Pointer to the FIFO queue \\
+\hline
+{\em chunk} & Pointer to the chunk to enqueue \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{sharedRegion_8c_a261f1cf15a7f34043115fb062a9c77be}\label{sharedRegion_8c_a261f1cf15a7f34043115fb062a9c77be}} 
+\index{sharedRegion.c@{sharedRegion.c}!enqueueChunks@{enqueueChunks}}
+\index{enqueueChunks@{enqueueChunks}!sharedRegion.c@{sharedRegion.c}}
+\doxysubsubsection{\texorpdfstring{enqueueChunks()}{enqueueChunks()}}
+{\footnotesize\ttfamily void enqueue\+Chunks (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structQueue}{Queue}} $\ast$}]{q,  }\item[{char $\ast$$\ast$}]{filenames,  }\item[{int}]{num\+Files,  }\item[{int}]{thread\+Size }\end{DoxyParamCaption})}
+
+
+
+Enqueues chunks into the FIFO queue. 
+
+Enqueues chunks of data into the FIFO queue for processing by worker threads, making sure that the chunks dont end in the middle of a word.
+
+
+\begin{DoxyParams}{Parameters}
+{\em q} & Pointer to the FIFO queue \\
+\hline
+{\em filenames} & Array of filenames \\
+\hline
+{\em num\+Files} & Number of filenames in the array \\
+\hline
+{\em thread\+Size} & Size of thread\textquotesingle{}s chunk \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{sharedRegion_8c_ad4f921aefa6969bbd0421e0cc17c4ce0}\label{sharedRegion_8c_ad4f921aefa6969bbd0421e0cc17c4ce0}} 
+\index{sharedRegion.c@{sharedRegion.c}!initFileStructures@{initFileStructures}}
+\index{initFileStructures@{initFileStructures}!sharedRegion.c@{sharedRegion.c}}
+\doxysubsubsection{\texorpdfstring{initFileStructures()}{initFileStructures()}}
+{\footnotesize\ttfamily void init\+File\+Structures (\begin{DoxyParamCaption}\item[{char $\ast$$\ast$}]{filenames,  }\item[{int}]{num\+Files }\end{DoxyParamCaption})}
+
+
+
+Initializes file structures. 
+
+Initializes the file structures for each file in the given array of filenames.
+
+
+\begin{DoxyParams}{Parameters}
+{\em filenames} & Array of filenames \\
+\hline
+{\em num\+Files} & Number of filenames in the array \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{sharedRegion_8c_ad39e3e862333b65bf911c0ad9f1b3b50}\label{sharedRegion_8c_ad39e3e862333b65bf911c0ad9f1b3b50}} 
+\index{sharedRegion.c@{sharedRegion.c}!initQueue@{initQueue}}
+\index{initQueue@{initQueue}!sharedRegion.c@{sharedRegion.c}}
+\doxysubsubsection{\texorpdfstring{initQueue()}{initQueue()}}
+{\footnotesize\ttfamily void init\+Queue (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structQueue}{Queue}} $\ast$}]{q }\end{DoxyParamCaption})}
+
+
+
+Initializes a FIFO queue. 
+
+Initializes the given FIFO queue with default values.
+
+
+\begin{DoxyParams}{Parameters}
+{\em q} & Pointer to the FIFO queue \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{sharedRegion_8c_a86d06915d90d46e1a0ffe08e3cb75437}\label{sharedRegion_8c_a86d06915d90d46e1a0ffe08e3cb75437}} 
+\index{sharedRegion.c@{sharedRegion.c}!updateFileStats@{updateFileStats}}
+\index{updateFileStats@{updateFileStats}!sharedRegion.c@{sharedRegion.c}}
+\doxysubsubsection{\texorpdfstring{updateFileStats()}{updateFileStats()}}
+{\footnotesize\ttfamily void update\+File\+Stats (\begin{DoxyParamCaption}\item[{char $\ast$}]{filename,  }\item[{int}]{num\+Words,  }\item[{int}]{num\+Words\+With\+Consonants,  }\item[{pthread\+\_\+t}]{thread\+ID }\end{DoxyParamCaption})}
+
+
+
+Update the file statistics. 
+
+Update the statistics for the specified file with the given word counts.
+
+
+\begin{DoxyParams}{Parameters}
+{\em filename} & Name of the file \\
+\hline
+{\em num\+Words} & Number of words processed \\
+\hline
+{\em num\+Words\+With\+Consonants} & Number of words with consonants processed \\
+\hline
+{\em thread\+ID} & ID of the thread performing the update \\
+\hline
+\end{DoxyParams}
+
+
+\doxysubsection{Variable Documentation}
+\mbox{\Hypertarget{sharedRegion_8c_ae315cadb0a24c08ece161978cf1cf409}\label{sharedRegion_8c_ae315cadb0a24c08ece161978cf1cf409}} 
+\index{sharedRegion.c@{sharedRegion.c}!fileStats@{fileStats}}
+\index{fileStats@{fileStats}!sharedRegion.c@{sharedRegion.c}}
+\doxysubsubsection{\texorpdfstring{fileStats}{fileStats}}
+{\footnotesize\ttfamily \mbox{\hyperlink{structFile}{File}} file\+Stats\mbox{[}MAX\+\_\+\+FILES\mbox{]}}
+
+Array to store statistics for each file \mbox{\Hypertarget{sharedRegion_8c_a8d896588118fcd016242d0c31b802da0}\label{sharedRegion_8c_a8d896588118fcd016242d0c31b802da0}} 
+\index{sharedRegion.c@{sharedRegion.c}!fileStatsMutex@{fileStatsMutex}}
+\index{fileStatsMutex@{fileStatsMutex}!sharedRegion.c@{sharedRegion.c}}
+\doxysubsubsection{\texorpdfstring{fileStatsMutex}{fileStatsMutex}}
+{\footnotesize\ttfamily pthread\+\_\+mutex\+\_\+t file\+Stats\+Mutex = PTHREAD\+\_\+\+MUTEX\+\_\+\+INITIALIZER}
+
+Mutex for file statistics \mbox{\Hypertarget{sharedRegion_8c_acc4be9200c8ec4a2152e10a7c33b3704}\label{sharedRegion_8c_acc4be9200c8ec4a2152e10a7c33b3704}} 
+\index{sharedRegion.c@{sharedRegion.c}!queue\_mutex@{queue\_mutex}}
+\index{queue\_mutex@{queue\_mutex}!sharedRegion.c@{sharedRegion.c}}
+\doxysubsubsection{\texorpdfstring{queue\_mutex}{queue\_mutex}}
+{\footnotesize\ttfamily pthread\+\_\+mutex\+\_\+t queue\+\_\+mutex = PTHREAD\+\_\+\+MUTEX\+\_\+\+INITIALIZER}
+
+Mutex for queue 
