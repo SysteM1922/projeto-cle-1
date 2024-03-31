@@ -187,5 +187,7 @@ void aggregateResults(Chunk* chunks, int numChunks) {
         fileStats.wordsCount += chunks[i].numWords;
         fileStats.wordsWithConsonants += chunks[i].numWordsWithConsonants;
     }
-    pthread_mutex_unlock(&fileStatsMutex);
+    pthread_mutexFile fileStats[MAX_FILES];
+pthread_mutex_t fileStatsMutex = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t queue_mutex = PTHREAD_MUTEX_INITIALIZER;_unlock(&fileStatsMutex);
 } */
