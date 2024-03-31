@@ -15,6 +15,8 @@
 #define MAX_FILES 20 
 
 
+static double get_delta_time(void);
+
 int main(int argc, char* argv[]) {
     int numThreads = 4; // Default number of threads
     int threadSize = DEFAULT_THREAD_SIZE; // Default size of thread's chunk (4000 bytes)
@@ -62,6 +64,8 @@ int main(int argc, char* argv[]) {
         exit(EXIT_FAILURE);
     }
     
+    get_delta_time();
+
     // Initialize the File structures for each file
     initFileStructures(filenames, numFiles);
 
@@ -87,11 +91,25 @@ int main(int argc, char* argv[]) {
         printf("Total number of words with at least two instances of the same consonant: %d\n", fileStats[i].wordsWithConsonants);
         printf("\n");
     }
-    
+    printf("Elapsed Time: %fs\n ", get_delta_time());
     // Cleanup
     for (int i = 0; i < numFiles; i++) {
         free(filenames[i]);
     }
 
+    
+
     return 0;
+}
+
+static double get_delta_time(void)
+{
+    static struct timespec t0, t1;
+
+    t0 = t1;
+    if(clock_gettime (CLOCK_MONOTONIC, &t1) != 0) {
+        perror("clock_gettime");
+        exit(1);
+    }
+    return (double) (t1.tv_sec - t0.tv_sec) + 1.0e-9 * (double) (t1.tv_nsec - t0.tv_nsec);
 }
