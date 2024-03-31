@@ -106,13 +106,18 @@ void enqueueChunks(Queue *q, char **filenames, int numFiles, int threadSize)
                 {
                     if ((iswalnum(c) || c == L'_' || c == L'’' || c == L'‘' || c == L'\''))
                     {
+                        printf("Found a word character at the end of the chunk [%d-%d] in file %s\n", start, end, filenames[i]);
+                        printf("Previous end: %d\n", end);
                         end++;
+                        printf("New end: %d\n", end);
                     }
                     else
                     {
                         break;
                     }
                 }
+                printf("\n");
+                printf("Enqueuing chunk from file %s [%d-%d]\n", chunk->filename, chunk->start, end);
                 chunk->end = end;
                 enqueue(q, chunk);
                 start = end + 1;
@@ -179,7 +184,7 @@ void enqueue(Queue *q, Chunk *chunk)
  * @param q Pointer to the FIFO queue
  * @return Pointer to the dequeued chunk
  */
-Chunk *dequeue(Queue *q)
+Chunk *dequeue(Queue *q, pthread_t threadID)
 {
     if (pthread_mutex_lock(&q->mutex) != 0)
     {
@@ -207,6 +212,8 @@ Chunk *dequeue(Queue *q)
         {
             q->rear = NULL;
         }
+
+        printf("Thread %ld, dequeued chunk from file %s [%d-%d]\n\n", threadID, chunk->filename, chunk->start, chunk->end);
 
         if (pthread_mutex_unlock(&q->mutex) != 0)
         {

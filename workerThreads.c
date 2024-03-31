@@ -125,7 +125,7 @@ void *threadStartRoutine(void *arg)
 
     while (1)
     {
-        Chunk *chunk = dequeue(fifo);
+        Chunk *chunk = dequeue(fifo, pthread_self());
         if (chunk == NULL)
         {
             break; // No more chunks to process

@@ -73,7 +73,7 @@ void enqueueChunks(Queue* q, char** filenames, int numFiles, int threadSize);
 
 void initQueue(Queue* q);
 void enqueue(Queue* q, Chunk* chunk);
-Chunk* dequeue(Queue* q);
+Chunk* dequeue(Queue* q, pthread_t threadID);
 
 void updateFileStats(char* filename, int numWords, int numWordsWithConsonants, pthread_t threadID);
 
