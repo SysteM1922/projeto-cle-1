@@ -77,4 +77,7 @@ Chunk* dequeue(Queue* q, pthread_t threadID);
 
 void updateFileStats(char* filename, int numWords, int numWordsWithConsonants, pthread_t threadID);
 
+void mutex_lock();
+void mutex_unlock();
+
 #endif // SHARED_REGION_H

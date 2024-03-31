@@ -22,6 +22,25 @@ File fileStats[MAX_FILES];                                  /**< Array to store 
 pthread_mutex_t fileStatsMutex = PTHREAD_MUTEX_INITIALIZER; /**< Mutex for file statistics */
 pthread_mutex_t queue_mutex = PTHREAD_MUTEX_INITIALIZER;    /**< Mutex for queue */
 
+void mutex_lock()
+{
+    if (pthread_mutex_lock(&queue_mutex) != 0)
+    {
+        perror("Error locking mutex");
+        exit(EXIT_FAILURE);
+    }
+}
+
+void mutex_unlock()
+{
+    if (pthread_mutex_unlock(&queue_mutex) != 0)
+    {
+        perror("Error unlocking mutex");
+        exit(EXIT_FAILURE);
+    }
+}
+
+
 /**
  * @brief Initializes file structures.
  *
@@ -179,7 +198,7 @@ void enqueue(Queue *q, Chunk *chunk)
  * @param q Pointer to the FIFO queue
  * @return Pointer to the dequeued chunk
  */
-Chunk *dequeue(Queue *q)
+Chunk* dequeue(Queue* q, pthread_t threadID)
 {
     mutex_lock();
 
